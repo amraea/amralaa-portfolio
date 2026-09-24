@@ -18,121 +18,230 @@ const [profileEntry, experiences, projects, skills, programs, education, certifi
 const profile = profileEntry?.data;
 if (!profile) throw new Error('Add a profile entry to src/content/profile/profile.json.');
 
-const orderedExperience = experiences.sort((a, b) => b.data.startDate.localeCompare(a.data.startDate));
+const egpc = experiences.find(({ data }) => data.company.includes('EGPC'));
+const corcRoles = experiences
+  .filter(({ data }) => data.company.includes('CORC'))
+  .sort((a, b) => a.data.startDate.localeCompare(b.data.startDate));
 const orderedProjects = projects.sort((a, b) => a.data.order - b.data.order);
-const skillCategories = [...new Set(skills.map((skill) => skill.data.category))];
-const dateLabel = (date: string | null) => {
+const coreSkills = skills
+  .filter(({ data }) => data.exposure === 'professional-experience')
+  .sort((a, b) => a.data.category.localeCompare(b.data.category) || a.data.order - b.data.order);
+const expandingSkills = skills
+  .filter(({ data }) => data.exposure !== 'professional-experience')
+  .sort((a, b) => a.data.category.localeCompare(b.data.category) || a.data.order - b.data.order);
+const dateLabel = (date: string | null, long = false) => {
   if (!date) return 'Present';
   const [year, month] = date.split('-').map(Number);
-  return new Intl.DateTimeFormat('en', { month: 'short', year: 'numeric', timeZone: 'UTC' }).format(new Date(Date.UTC(year, month - 1, 1)));
+  return new Intl.DateTimeFormat('en', { month: long ? 'long' : 'short', year: 'numeric', timeZone: 'UTC' }).format(new Date(Date.UTC(year, month - 1, 1)));
 };
+const exposureLabel = (exposure: string) => ({
+  'professional-experience': 'Professional experience',
+  'project-experience': 'Project experience',
+  'hands-on-exposure': 'Hands-on exposure',
+  positioning: 'Developing focus',
+}[exposure] ?? exposure);
+const projectLabels = {
+  production: 'Production project',
+  analytics: 'Analytics Project',
+  initiative: 'Business Process Initiative',
+  poc: 'PoC',
+  hackathon: 'Hackathon PoC',
+  experimental: 'Learning / Experimental',
+} as const;
+const impactMetrics = [
+  { value: '14+', label: 'Years in Finance & SAP' },
+  { value: '~980', label: 'SAP Support Activities', detail: 'Within a six-month period' },
+  { value: '3', label: 'Company Implementations / Go-Lives', detail: 'Participated in' },
+  { value: '11', label: 'Companies covered by SAP Support Analytics' },
+];
+const portrait = '/images/Gemini_Generated_Image_fawrrsfawrrsfawr.png';
 ---
 
-<BaseLayout title={`${profile.name} | SAP Finance & Business Process`} description={profile.shortBio}>
-  <div id="top">
-    <SiteHeader name={profile.name} />
-    <main class="mx-auto max-w-6xl px-5 sm:px-8">
-      <section id="profile" class="scroll-mt-8 border-b border-slate-200 py-16 sm:py-24">
-        <p class="text-sm font-semibold uppercase tracking-wide text-sky-800">Portfolio</p>
-        <h1 class="mt-4 max-w-4xl text-4xl font-semibold tracking-tight sm:text-6xl">{profile.name}</h1>
-        <p class="mt-5 max-w-3xl text-xl leading-8 text-slate-700">{profile.professionalHeadline}</p>
-        <p class="mt-5 max-w-3xl leading-7 text-slate-600">{profile.shortBio}</p>
-        <div class="mt-7 flex flex-wrap gap-4">
-          {profile.resume && <a class="rounded-md bg-slate-900 px-5 py-3 font-medium text-white hover:bg-slate-700" href={profile.resume} download>Download resume</a>}
-          {profile.email && <a class="rounded-md border border-slate-300 px-5 py-3 font-medium hover:bg-white" href={`mailto:${profile.email}`}>Email</a>}
-          {profile.linkedin && <a class="rounded-md border border-slate-300 px-5 py-3 font-medium hover:bg-white" href={profile.linkedin} target="_blank" rel="noreferrer">LinkedIn</a>}
-          {profile.github && <a class="rounded-md border border-slate-300 px-5 py-3 font-medium hover:bg-white" href={profile.github} target="_blank" rel="noreferrer">GitHub</a>}
+<BaseLayout title={`${profile.name} | SAP Finance & Business Transformation`} description={profile.shortBio}>
+  <div id="top" class="site-shell">
+    <SiteHeader name="AMR ALAAELDIN AHMED" />
+
+    <main>
+      <section class="hero" aria-labelledby="hero-title">
+        <div class="hero__inner page-width">
+          <div class="hero__copy">
+            <p class="eyebrow eyebrow--light">SAP Finance <span aria-hidden="true">×</span> Business Transformation</p>
+            <h1 id="hero-title">AMR ALAAELDIN <span>AHMED</span></h1>
+            <p class="hero__lead">Turning finance experience into better SAP processes, analytics, automation and applied AI.</p>
+            <p class="hero__expertise">SAP FI/CO <span>·</span> S/4HANA Finance <span>·</span> Process Improvement <span>·</span> Power BI <span>·</span> BTP <span>·</span> Applied AI</p>
+            <div class="hero__actions">
+              <a class="button button--blue" href="#work">Explore my work <span aria-hidden="true">↘</span></a>
+              {profile.resume && <a class="button button--outline-light" href={profile.resume} download>Download CV <span aria-hidden="true">↓</span></a>}
+            </div>
+          </div>
+
+          <figure class="hero-portrait">
+            <div class="hero-portrait__frame">
+              <img src={portrait} width="1024" height="1024" alt="Illustrated portrait representing Amr Alaa" fetchpriority="high" />
+            </div>
+          </figure>
+
+          <div class="hero-path" aria-label="Professional progression">
+            <span>Finance</span><b aria-hidden="true">→</b>
+            <span>SAP Finance &amp; Process</span><b aria-hidden="true">→</b>
+            <span>Data &amp; Automation</span><b aria-hidden="true">→</b>
+            <span>BTP &amp; Applied AI</span>
+          </div>
         </div>
-        {profile.impactMetrics.length > 0 && (
-          <dl class="mt-12 grid gap-4 sm:grid-cols-2">
-            {profile.impactMetrics.map((metric) => (
-              <div class="rounded-lg border border-slate-200 bg-white p-5">
-                <dt class="text-sm text-slate-600">{metric.label}</dt>
-                <dd class="mt-1 text-2xl font-semibold">{metric.value}</dd>
-                {metric.context && <p class="mt-1 text-sm text-slate-500">{metric.context}</p>}
-              </div>
-            ))}
-          </dl>
-        )}
       </section>
 
-      {orderedExperience.length > 0 && (
-        <section id="experience" class="scroll-mt-8 border-b border-slate-200 py-14 sm:py-20">
-          <SectionHeading eyebrow="Career" title="Experience" description="Finance and SAP roles across EGPC and Cairo Oil Refining Company." />
-          <div class="grid gap-4">
-            {orderedExperience.map(({ data }) => (
-              <article class="rounded-xl border border-slate-200 bg-white p-5 sm:p-6">
-                <div class="flex flex-col justify-between gap-2 sm:flex-row sm:gap-6">
-                  <div>
-                    <h3 class="font-semibold">{data.role}</h3>
-                    <p class="mt-1 text-slate-600">{data.company}</p>
-                  </div>
-                  <p class="shrink-0 text-sm text-slate-500">{dateLabel(data.startDate)} – {dateLabel(data.endDate)}</p>
+      <section class="evidence" aria-label="Verified experience and project scope">
+        <div class="evidence__grid page-width">
+          {impactMetrics.map((metric, index) => (
+            <div class:list={["evidence__item", { 'evidence__item--first': index === 0 }]}>
+              <p class="evidence__value">{metric.value}</p>
+              <p class="evidence__label">{metric.label}</p>
+              {metric.detail && <p class="evidence__detail">{metric.detail}</p>}
+            </div>
+          ))}
+        </div>
+      </section>
+
+      <section id="about" class="section section--paper">
+        <div class="page-width">
+          <SectionHeading eyebrow="A finance-led foundation" title="From financial operations to business transformation" description="The through-line is a deep understanding of finance, extended through SAP, implementation, analytics and emerging technology." />
+          <div class="story-grid">
+            <p class="story-copy">Amr’s career began in finance and budgeting at Cairo Oil Refining Company, then moved into SAP support at EGPC. SAP FI/CO, Treasury and Real Estate Management remain the core. Implementation, go-live, requirements clarification, SIT, UAT and business validation connect that finance foundation to business process work.</p>
+            <p class="story-copy story-copy--secondary">Power BI project work extends the story into analytics and process improvement. Through MDEP-CE, Amr gained hands-on exposure to SAP CAP, HANA Cloud, APIs, Joule Studio and AI agents. These are developing capabilities that build on his finance and SAP experience.</p>
+          </div>
+          <ol class="progression" aria-label="Career and capability progression">
+            <li><span class="progression__step">01</span><span>Finance</span></li>
+            <li><span class="progression__step">02</span><span>SAP Finance</span></li>
+            <li><span class="progression__step">03</span><span>Business Process</span></li>
+            <li><span class="progression__step">04</span><span>Data &amp; Automation</span></li>
+            <li><span class="progression__step">05</span><span>BTP &amp; Applied AI</span></li>
+          </ol>
+        </div>
+      </section>
+
+      <section id="expertise" class="section section--white">
+        <div class="page-width">
+          <SectionHeading eyebrow="Expertise" title="A strong core. A growing edge." description="Experience is grounded in finance and SAP business processes, with analytics and emerging technologies extending that foundation." />
+          <div class="expertise-grid">
+            <section class="expertise-panel expertise-panel--core" aria-labelledby="core-title">
+              <div class="expertise-panel__heading">
+                <span class="section-index">01 / CORE</span>
+                <h3 id="core-title">Core experience</h3>
+                <p>Capabilities grounded in professional roles.</p>
+              </div>
+              <ul class="expertise-list">
+                {coreSkills.map(({ data }) => (
+                  <li><span>{data.name}</span><small>{data.category}</small></li>
+                ))}
+              </ul>
+            </section>
+            <section class="expertise-panel expertise-panel--expanding" aria-labelledby="expanding-title">
+              <div class="expertise-panel__heading">
+                <span class="section-index">02 / EXPANDING</span>
+                <h3 id="expanding-title">Expanding the core</h3>
+                <p>Project work, hands-on exploration and developing focus.</p>
+              </div>
+              <ul class="expertise-list">
+                {expandingSkills.map(({ data }) => (
+                  <li><span>{data.name}</span><small>{exposureLabel(data.exposure)}</small></li>
+                ))}
+              </ul>
+            </section>
+          </div>
+        </div>
+      </section>
+
+      <section id="work" class="section section--paper">
+        <div class="page-width">
+          <SectionHeading eyebrow="Selected work" title="Applied experience, made visible" description="Projects spanning collaborative AI exploration, support analytics and business process improvement." />
+          <div class="work-list">
+            {orderedProjects.map((project) => (
+              <ProjectCard project={project} categoryLabel={projectLabels[project.data.category]} />
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section id="experience" class="section section--white">
+        <div class="page-width">
+          <SectionHeading eyebrow="Experience" title="A career in progression" description="One continuous journey from finance and budgeting into SAP Finance support and implementation." />
+          <div class="career-layout">
+            {egpc && (
+              <article class="career-current">
+                <div class="career-current__top">
+                  <span class="section-index">CURRENT ROLE</span>
+                  <p>{dateLabel(egpc.data.startDate, true)} – Present</p>
                 </div>
-                {data.summary && <p class="mt-4 leading-7 text-slate-600">{data.summary}</p>}
-                {data.responsibilities.length > 0 && <ul class="mt-4 list-disc space-y-2 pl-5 text-slate-600">{data.responsibilities.map((item) => <li>{item}</li>)}</ul>}
-                {data.achievements.length > 0 && <ul class="mt-4 list-disc space-y-2 pl-5 text-slate-600">{data.achievements.map((item) => <li>{item}</li>)}</ul>}
-              </article>
-            ))}
-          </div>
-        </section>
-      )}
-
-      {orderedProjects.length > 0 && (
-        <section id="projects" class="scroll-mt-8 border-b border-slate-200 py-14 sm:py-20">
-          <SectionHeading eyebrow="Selected work" title="Projects" description="Project category, delivery status, and development context are shown separately." />
-          <div class="grid gap-4 md:grid-cols-2">
-            {orderedProjects.map((project) => <ProjectCard project={project} />)}
-          </div>
-        </section>
-      )}
-
-      {skillCategories.length > 0 && (
-        <section id="skills" class="scroll-mt-8 border-b border-slate-200 py-14 sm:py-20">
-          <SectionHeading eyebrow="Capabilities" title="Skills & exposure" description="Experience labels show whether a skill comes from a role, a project, or hands-on exploration." />
-          <div class="grid gap-4 sm:grid-cols-2">
-            {skillCategories.map((category) => (
-              <section class="rounded-xl border border-slate-200 bg-white p-5" aria-label={category}>
-                <h3 class="font-semibold">{category}</h3>
-                <ul class="mt-4 space-y-3">
-                  {skills.filter((skill) => skill.data.category === category).sort((a, b) => a.data.order - b.data.order).map(({ data }) => (
-                    <li class="flex flex-col gap-1 sm:flex-row sm:items-baseline sm:justify-between">
-                      <span>{data.name}</span>
-                      <span class="text-xs text-slate-500">{data.exposure.replaceAll('-', ' ')}</span>
-                    </li>
-                  ))}
+                <p class="career-current__company">Egyptian General Petroleum Corporation</p>
+                <h3>{egpc.data.role}</h3>
+                <p class="career-current__summary">{egpc.data.summary}</p>
+                <ul class="fact-list">
+                  {egpc.data.responsibilities.map((item) => <li>{item}</li>)}
                 </ul>
-              </section>
-            ))}
+              </article>
+            )}
+
+            <section class="career-journey" aria-labelledby="corc-title">
+              <div class="career-journey__heading">
+                <span class="section-index">FINANCE FOUNDATION</span>
+                <p>October 2010 – May 2024</p>
+              </div>
+              <h3 id="corc-title">Cairo Oil Refining Company <span>CORC</span></h3>
+              <ol class="role-timeline">
+                {corcRoles.map(({ data }) => (
+                  <li>
+                    <span class="role-timeline__marker" aria-hidden="true"></span>
+                    <div><h4>{data.role}</h4><p>{dateLabel(data.startDate, true)} – {dateLabel(data.endDate, true)}</p></div>
+                  </li>
+                ))}
+              </ol>
+            </section>
           </div>
-        </section>
-      )}
+        </div>
+      </section>
 
-      {programs.length > 0 && (
-        <section id="programs" class="scroll-mt-8 border-b border-slate-200 py-14 sm:py-20">
-          <SectionHeading eyebrow="Programs & recognition" title="Programs and achievements" description="Programs and team recognition connected to the project work." />
-          <ul class="grid gap-4 sm:grid-cols-2">
-            {programs.map(({ data }) => (
-              <li class="rounded-xl border border-slate-200 bg-white p-5">
-                <p class="text-xs font-semibold uppercase tracking-wide text-sky-800">{data.type}</p>
-                <h3 class="mt-2 font-semibold">{data.title}</h3>
-                {data.organization && <p class="mt-1 text-sm text-slate-600">{data.organization}</p>}
-                <p class="mt-3 leading-7 text-slate-600">{data.summary}</p>
-              </li>
-            ))}
-          </ul>
-        </section>
-      )}
+      <section id="credentials" class="section section--paper">
+        <div class="page-width">
+          <SectionHeading eyebrow="Credentials and programs" title="Learning in practice" description="Programs and team recognition are shown separately from formal education and certifications." />
+          <div class:list={["credentials-grid", { 'credentials-grid--programs-only': certifications.length === 0 && education.length === 0 }]}>
+            {(certifications.length > 0 || education.length > 0) && (
+              <section class="credentials-panel" aria-labelledby={certifications.length > 0 ? 'certifications-title' : 'education-title'}>
+                <span class="section-index">FORMAL CREDENTIALS</span>
+                {certifications.length > 0 && <><h3 id="certifications-title">Certifications</h3><ul class="credential-list">{certifications.map(({ data }) => <li><strong>{data.name}</strong><span>{data.issuer}</span></li>)}</ul></>}
+                {education.length > 0 && <div class="education-list"><h3 id="education-title">Education</h3>{education.map(({ data }) => <p><strong>{data.qualification}</strong> · {data.institution}</p>)}</div>}
+              </section>
+            )}
+            <section class="credentials-panel credentials-panel--programs" aria-labelledby="programs-title">
+              <span class="section-index">PROGRAMS &amp; RECOGNITION</span>
+              <h3 id="programs-title">Programs and achievements</h3>
+              <ul class="program-list">
+                {programs.map(({ data }) => (
+                  <li><span class="program-list__type">{data.type}</span><div><h4>{data.title}</h4>{data.organization && <p>{data.organization}</p>}<p class="program-list__summary">{data.summary}</p></div></li>
+                ))}
+              </ul>
+            </section>
+          </div>
+        </div>
+      </section>
 
-      {(education.length > 0 || certifications.length > 0) && (
-        <section class="py-14 sm:py-20" aria-label="Education and certifications">
-          {education.length > 0 && <div><SectionHeading title="Education" /><ul class="space-y-4">{education.map(({ data }) => <li><strong>{data.qualification}</strong>{data.fieldOfStudy && ` — ${data.fieldOfStudy}`} · {data.institution}</li>)}</ul></div>}
-          {certifications.length > 0 && <div class="mt-12"><SectionHeading title="Certifications" /><ul class="space-y-4">{certifications.map(({ data }) => <li><strong>{data.name}</strong> · {data.issuer}</li>)}</ul></div>}
-        </section>
-      )}
+      <section id="contact" class="contact-section">
+        <div class="contact-section__inner page-width">
+          <div>
+            <p class="eyebrow eyebrow--light">Next step</p>
+            <h2>See the experience<br />behind the work.</h2>
+            <p>Explore the projects and career progression, or download the CV for a concise overview.</p>
+          </div>
+          <div class="contact-section__actions">
+            <a class="button button--blue" href="#work">Explore selected work <span aria-hidden="true">↗</span></a>
+            {profile.resume && <a class="button button--outline-light" href={profile.resume} download>Download CV <span aria-hidden="true">↓</span></a>}
+            {profile.email && <a class="contact-email" href={`mailto:${profile.email}`}>Email Amr</a>}
+          </div>
+        </div>
+      </section>
     </main>
-    <footer class="border-t border-slate-200 bg-white px-5 py-6 text-center text-sm text-slate-500">
-      <p>{profile.name}</p>
+
+    <footer class="site-footer">
+      <div class="page-width"><a href="#top">AMR ALAAELDIN AHMED</a><span>Finance × SAP × Business Transformation</span><a href="#top" class="back-to-top">Back to top ↑</a></div>
     </footer>
   </div>
 </BaseLayout>

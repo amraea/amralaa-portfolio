@@ -3,35 +3,29 @@ import type { CollectionEntry } from 'astro:content';
 
 interface Props {
   project: CollectionEntry<'projects'>;
+  categoryLabel: string;
 }
 
-const { project } = Astro.props;
+const { project, categoryLabel } = Astro.props;
 const { data } = project;
-const categoryLabels = {
-  production: 'Production Project',
-  analytics: 'Analytics Project',
-  initiative: 'Initiative',
-  poc: 'PoC',
-  hackathon: 'Hackathon PoC',
-  experimental: 'Learning / Experimental Project',
-} as const;
+const index = String(data.order).padStart(2, '0');
+const metric = data.metrics[0];
 ---
 
-<article class="flex h-full flex-col rounded-xl border border-slate-200 bg-white p-6">
-  <div class="mb-4 flex flex-wrap gap-2 text-xs">
-    <span class="rounded-full bg-slate-100 px-3 py-1 font-medium text-slate-700">{categoryLabels[data.category]}</span>
-    {data.status && <span class="rounded-full border border-slate-200 px-3 py-1 text-slate-600">{data.status.replace('-', ' ').replace(/^./, (letter) => letter.toUpperCase())}</span>}
-    {data.deploymentStatus && <span class="rounded-full border border-slate-200 px-3 py-1 text-slate-600">{data.deploymentStatus === 'non-production' ? 'Not a production deployment' : 'Production deployment'}</span>}
+<article class:list={["work-item", { 'work-item--featured': data.order === 1 }]}>
+  <div class="work-item__number" aria-hidden="true">{index}</div>
+  <div class="work-item__body">
+    <div class="work-item__meta">
+      <span class="work-item__category">{categoryLabel}</span>
+      {data.developmentContext && <span>{data.developmentContext}</span>}
+      {data.organization && <span>{data.organization}</span>}
+    </div>
+    <h3><a href={`/projects/${project.id}/`}>{data.title}<span aria-hidden="true"> ↗</span></a></h3>
+    <p class="work-item__description">{data.shortDescription}</p>
+    <div class="work-item__foot">
+      {data.technologies.length > 0 && <p>{data.technologies.join(' · ')}</p>}
+      {metric && <p class="work-item__metric"><strong>{metric.value}</strong> {metric.unit ?? metric.label}</p>}
+      <a class="work-item__link" href={`/projects/${project.id}/`}>Explore project <span aria-hidden="true">↗</span></a>
+    </div>
   </div>
-  <h3 class="text-lg font-semibold">{data.title}</h3>
-  <p class="mt-3 flex-1 leading-7 text-slate-600">{data.shortDescription}</p>
-  {data.developmentContext && <p class="mt-3 text-sm text-slate-500">{data.developmentContext}</p>}
-  {data.metrics.length > 0 && (
-    <ul class="mt-4 flex flex-wrap gap-2">
-      {data.metrics.map((metric) => <li class="rounded-md bg-slate-50 px-3 py-2 text-sm text-slate-700"><strong>{metric.value}</strong> {metric.unit ?? metric.label}</li>)}
-    </ul>
-  )}
-  <a class="mt-6 inline-flex w-fit font-medium text-sky-800 underline decoration-sky-300 underline-offset-4 hover:text-sky-950" href={`/projects/${project.id}/`}>
-    Project details <span class="sr-only">for {data.title}</span>
-  </a>
 </article>
