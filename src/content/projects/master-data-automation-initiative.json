@@ -1,0 +1,27 @@
+{
+  "title": "Master Data Automation Initiative",
+  "category": "initiative",
+  "featured": true,
+  "order": 3,
+  "shortDescription": "A cross-company initiative to consolidate master-data requests that had previously been submitted separately for each company.",
+  "businessContext": "The initiative covered 10 companies and master data for customers, vendors, employees, G/L accounts, banks, profit centers, and cost centers.",
+  "challenge": "Master Data requests were submitted separately for each company.",
+  "solution": "Consolidated Master Data requests across companies instead of handling a separate request for each company.",
+  "myRole": "Contributed to the original business idea, business-requirements clarification, process design, User Acceptance Testing (UAT), and solution development.",
+  "teamContext": null,
+  "technologies": [],
+  "metrics": [
+    {
+      "label": "Companies covered",
+      "value": "10",
+      "unit": "companies"
+    }
+  ],
+  "coverImage": null,
+  "gallery": [],
+  "date": null,
+  "linkedinUrl": null,
+  "githubUrl": null,
+  "demoUrl": null,
+  "lessonsLearned": []
+}

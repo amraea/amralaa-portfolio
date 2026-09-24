@@ -1,0 +1,30 @@
+{
+  "title": "SAP Support Analytics — Power BI",
+  "category": "analytics",
+  "status": "completed",
+  "developmentContext": "Developed through DEPI.",
+  "featured": true,
+  "order": 2,
+  "shortDescription": "Power BI analytics across 11 companies, covering SAP support ticket, workload, problem, recurrence, resolution, and process data.",
+  "businessContext": "The analysis covers data from 11 companies.",
+  "challenge": "Provide visibility across ticket volumes, workload, recurring problems, critical issues, and process improvement or automation opportunities.",
+  "solution": "A Power BI analytics project bringing together ticket, workload, problem, recurrence, resolution, and process data.",
+  "myRole": null,
+  "teamContext": null,
+  "technologies": ["Power BI"],
+  "impact": "Provides visibility into ticket volumes, workload, recurring problems, critical issues, and process improvement and automation opportunities.",
+  "metrics": [
+    {
+      "label": "Companies covered",
+      "value": "11",
+      "unit": "companies"
+    }
+  ],
+  "coverImage": null,
+  "gallery": [],
+  "date": null,
+  "linkedinUrl": null,
+  "githubUrl": null,
+  "demoUrl": null,
+  "lessonsLearned": []
+}

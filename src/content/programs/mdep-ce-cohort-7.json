@@ -1,0 +1,10 @@
+{
+  "title": "SAP Multi-Dimensional Engineers Program – Customer Edition (MDEP-CE), Cohort 7",
+  "type": "program",
+  "organization": "SAP",
+  "date": null,
+  "summary": "Participated in Cohort 7 and developed the AI Maintenance Planner hackathon PoC as part of the BRICKS team. Gained hands-on exposure to SAP CAP, HANA Cloud, APIs, Joule Studio, and AI agents.",
+  "teamContext": "BRICKS team; BRICKS won the program hackathon.",
+  "relatedProjects": ["ai-maintenance-planner"],
+  "url": null
+}

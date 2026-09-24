@@ -1,0 +1,23 @@
+{
+  "company": "Egyptian General Petroleum Corporation (EGPC)",
+  "role": "SAP FI/CO, Treasury & Real Estate Management Support",
+  "location": null,
+  "startDate": "2024-05",
+  "endDate": null,
+  "currentRole": true,
+  "summary": "Support across FI, CO, Treasury, and Real Estate Management, including implementation and go-live activities.",
+  "responsibilities": [
+    "Clarify requirements with business teams and collaborate with IBM.",
+    "Align SAP solutions with finance and business needs.",
+    "Harmonize Chart of Accounts and master data.",
+    "Participate in SIT, UAT, issue analysis, and business validation.",
+    "Support implementation and go-live activities."
+  ],
+  "achievements": [
+    "Handled approximately 980 SAP support activities within a six-month period.",
+    "Participated in implementation and go-live for three companies.",
+    "Another company implementation is in preparation."
+  ],
+  "technologies": ["SAP FI/CO", "Treasury", "Real Estate Management"],
+  "relatedProjects": []
+}
