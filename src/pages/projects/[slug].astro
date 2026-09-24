@@ -2,6 +2,10 @@
 import { getCollection, getEntry } from 'astro:content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import SiteHeader from '../../components/SiteHeader.astro';
+import CaseStudyProgression from '../../components/case-studies/CaseStudyProgression.astro';
+import CaseStudyVisual from '../../components/case-studies/CaseStudyVisual.astro';
+import { caseStudies } from '../../content/caseStudies';
+import '../../styles/case-studies.css';
 
 export async function getStaticPaths() {
   const projects = await getCollection('projects');
@@ -10,64 +14,155 @@ export async function getStaticPaths() {
 
 const { project } = Astro.props;
 const { data } = project;
+const story = caseStudies[project.id];
+if (!story) throw new Error(`Add the case-study narrative for "${project.id}" to src/content/caseStudies.ts.`);
 const profileEntry = await getEntry('profile', 'profile');
 if (!profileEntry) throw new Error('Add the profile entry to src/content/profile/profile.json.');
 const profile = profileEntry.data;
-const categoryLabels = {
-  production: 'Production Project',
-  analytics: 'Analytics Project',
-  initiative: 'Initiative',
-  poc: 'PoC',
-  hackathon: 'Hackathon PoC',
-  experimental: 'Learning / Experimental Project',
-} as const;
+const brandName = 'AMR ALAAELDIN AHMED';
+const projectSequence = ['sap-support-analytics-power-bi', 'master-data-automation-initiative', 'ai-maintenance-planner'];
+const currentIndex = projectSequence.indexOf(project.id);
+const previousId = projectSequence[currentIndex - 1];
+const nextId = projectSequence[currentIndex + 1];
+const projectLinks = {
+  'sap-support-analytics-power-bi': { href: '/projects/sap-support-analytics-power-bi/', title: 'SAP Support Analytics' },
+  'master-data-automation-initiative': { href: '/projects/master-data-automation-initiative/', title: 'Master Data Automation Initiative' },
+  'ai-maintenance-planner': { href: '/projects/ai-maintenance-planner/', title: 'AI Maintenance Planner' },
+};
+const previous = previousId ? projectLinks[previousId as keyof typeof projectLinks] : null;
+const next = nextId ? projectLinks[nextId as keyof typeof projectLinks] : null;
 ---
 
 <BaseLayout title={`${data.title} | ${profile.name}`} description={data.shortDescription}>
-  <SiteHeader name={profile.name} base="/" />
-  <main class="mx-auto max-w-4xl px-5 py-14 sm:px-8 sm:py-20">
-    <a class="text-sm font-medium text-sky-800 underline underline-offset-4" href="/#projects">← All projects</a>
-    <article class="mt-8">
-      <div class="flex flex-wrap gap-2 text-xs">
-        <span class="rounded-full bg-slate-100 px-3 py-1 font-medium">{categoryLabels[data.category]}</span>
-        {data.status && <span class="rounded-full border border-slate-200 px-3 py-1">{data.status.replace('-', ' ').replace(/^./, (letter) => letter.toUpperCase())}</span>}
-        {data.deploymentStatus && <span class="rounded-full border border-slate-200 px-3 py-1">{data.deploymentStatus === 'non-production' ? 'Not a production deployment' : 'Production deployment'}</span>}
-      </div>
-      <h1 class="mt-5 text-3xl font-semibold tracking-tight sm:text-5xl">{data.title}</h1>
-      <p class="mt-5 text-lg leading-8 text-slate-700">{data.shortDescription}</p>
-      {data.developmentContext && <p class="mt-4 text-sm text-slate-500">{data.developmentContext}</p>}
-      {data.organization && <p class="mt-2 text-sm text-slate-500">Organization: {data.organization}</p>}
-      {data.date && <p class="mt-2 text-sm text-slate-500">{data.date}</p>}
-      {data.coverImage && <img class="mt-8 max-h-[32rem] w-full rounded-xl border border-slate-200 object-cover" src={data.coverImage} alt={`${data.title} cover`} loading="lazy" />}
+  <div id="top" class="case-study-shell">
+    <SiteHeader name={brandName} base="/" />
+    <main class="case-study page-width" aria-labelledby="case-study-title">
+      <nav class="case-breadcrumb" aria-label="Breadcrumb">
+        <ol>
+          <li><a href="/#top">Home</a></li>
+          <li><span aria-hidden="true">/</span><a href="/#work">Selected work</a></li>
+          <li aria-current="page"><span aria-hidden="true">/</span>{story.category}</li>
+        </ol>
+      </nav>
 
-      {data.metrics.length > 0 && (
-        <dl class="mt-8 grid gap-4 sm:grid-cols-2">
-          {data.metrics.map((metric) => (
-            <div class="rounded-lg border border-slate-200 bg-white p-4">
-              <dt class="text-sm text-slate-600">{metric.label}</dt>
-              <dd class="mt-1 text-xl font-semibold">{metric.value}{metric.unit ? ` ${metric.unit}` : ''}</dd>
-              {metric.context && <p class="mt-1 text-sm text-slate-500">{metric.context}</p>}
-            </div>
-          ))}
-        </dl>
+      <header class="case-hero">
+        <div class="case-hero__copy">
+          <p class="case-eyebrow"><span>{String(currentIndex + 1).padStart(2, '0')}</span>{story.sequence}</p>
+          <div class="case-tags">
+            <span>{story.category}</span>
+          </div>
+          <h1 id="case-study-title">{data.title}</h1>
+          <p class="case-hero__statement">{story.heroStatement}</p>
+        </div>
+        <aside class="case-snapshot" aria-label="Project snapshot">
+          <p>Project snapshot</p>
+          <dl>{story.snapshot.map((item) => <div><dt>{item.label}</dt><dd>{item.value}</dd></div>)}</dl>
+        </aside>
+      </header>
+
+      <dl class:list={["case-facts", `case-facts--${story.sequence.toLowerCase()}`]} aria-label="Project scope and focus">
+        {story.facts.map((fact) => <div><dt>{fact.label}</dt><dd>{fact.value}</dd></div>)}
+      </dl>
+
+      <section class="case-section case-opening" aria-labelledby="opening-title">
+        <div class="case-section__label"><span>01</span><span>Context</span></div>
+        <div class="case-section__body case-reading">
+          <h2 id="opening-title">{story.sequence === 'SEE' ? 'Turn support activity into management insight' : story.sequence === 'IMPROVE' ? 'From repeated requests to a consolidated process' : 'Explore a more decision-oriented planning experience'}</h2>
+          {story.opening.split('\n\n').map((paragraph) => <p>{paragraph}</p>)}
+        </div>
+      </section>
+
+      <section class="case-section case-challenge" aria-labelledby="challenge-title">
+        <div class="case-section__label"><span>02</span><span>The challenge</span></div>
+        <div class="case-section__body case-reading">
+          <h2 id="challenge-title">{story.challenge.heading}</h2>
+          <p>{story.challenge.body}</p>
+          {story.sequence === 'EXPLORE' && story.question && <blockquote class="case-question"><span>{story.question.setup}</span><strong>{story.question.prompt}</strong></blockquote>}
+          {story.challenge.questions && <ul class="case-question-list">{story.challenge.questions.map((question) => <li>{question}</li>)}</ul>}
+        </div>
+      </section>
+
+      <section class:list={["case-visual-section", { 'case-visual-section--process': story.sequence === 'IMPROVE' }]} aria-label={story.sequence === 'SEE' ? 'Data to improvement sequence' : story.sequence === 'IMPROVE' ? 'Before and after process comparison' : 'Conceptual technology and decision-support flow'}>
+        <CaseStudyVisual kind={story.visual} before={story.before} after={story.after} />
+      </section>
+
+      <section class="case-section case-role" aria-labelledby="role-title">
+        <div class="case-section__label"><span>03</span><span>Contribution</span></div>
+        <div class="case-section__body case-reading">
+          <p class="case-section__kicker">{story.sequence === 'EXPLORE' ? 'TEAM CONTRIBUTION' : 'AMR’S ROLE'}</p>
+          <h2 id="role-title">{story.role.heading}</h2>
+          <p>{story.role.body}</p>
+          {story.role.points && <ol class:list={["contribution-list", { 'contribution-list--sequence': story.sequence === 'IMPROVE' }]}>{story.role.points.map((point, index) => <li><span>{String(index + 1).padStart(2, '0')}</span>{point}</li>)}</ol>}
+          {story.teamAchievement && <p class="team-award">{story.teamAchievement}</p>}
+        </div>
+      </section>
+
+      {story.sequence === 'SEE' && story.interpretation && (
+        <section class="case-section case-interpretation" aria-labelledby="interpretation-title">
+          <div class="case-section__label"><span>04</span><span>From data to improvement</span></div>
+          <div class="case-section__body case-reading">
+            <h2 id="interpretation-title">{story.interpretation.heading}</h2>
+            <p>{story.interpretation.body}</p>
+            {story.contribution && <ol class="transformation-sequence" aria-label="From repetition to standardization">{story.contribution.map((item) => <li>{item}</li>)}</ol>}
+          </div>
+        </section>
       )}
 
-      <dl class="mt-10 grid gap-8">
-        {data.businessContext && <div><dt class="font-semibold">Business context</dt><dd class="mt-2 leading-7 text-slate-600">{data.businessContext}</dd></div>}
-        {data.challenge && <div><dt class="font-semibold">Challenge</dt><dd class="mt-2 leading-7 text-slate-600">{data.challenge}</dd></div>}
-        {data.solution && <div><dt class="font-semibold">Solution</dt><dd class="mt-2 leading-7 text-slate-600">{data.solution}</dd></div>}
-        {data.myRole && <div><dt class="font-semibold">My role</dt><dd class="mt-2 leading-7 text-slate-600">{data.myRole}</dd></div>}
-        {data.teamContext && <div><dt class="font-semibold">Team context</dt><dd class="mt-2 leading-7 text-slate-600">{data.teamContext}</dd></div>}
-        {data.impact && <div><dt class="font-semibold">Impact / outcome</dt><dd class="mt-2 leading-7 text-slate-600">{data.impact}</dd></div>}
-        {data.technologies.length > 0 && <div><dt class="font-semibold">Technologies</dt><dd class="mt-2 leading-7 text-slate-600">{data.technologies.join(' · ')}</dd></div>}
-        {data.lessonsLearned.length > 0 && <div><dt class="font-semibold">Learning</dt><dd class="mt-2"><ul class="list-disc space-y-2 pl-5 text-slate-600">{data.lessonsLearned.map((item) => <li>{item}</li>)}</ul></dd></div>}
-      </dl>
-      <div class="mt-8 flex flex-wrap gap-4 text-sm">
-        {data.linkedinUrl && <a class="text-sky-800 underline underline-offset-4" href={data.linkedinUrl} target="_blank" rel="noreferrer">LinkedIn</a>}
-        {data.githubUrl && <a class="text-sky-800 underline underline-offset-4" href={data.githubUrl} target="_blank" rel="noreferrer">GitHub</a>}
-        {data.demoUrl && <a class="text-sky-800 underline underline-offset-4" href={data.demoUrl} target="_blank" rel="noreferrer">Demo</a>}
-      </div>
-      {data.gallery.length > 0 && <ul class="mt-10 grid gap-4 sm:grid-cols-2">{data.gallery.map((image, index) => <li><img class="w-full rounded-lg border border-slate-200" src={image} alt={`${data.title} gallery image ${index + 1}`} loading="lazy" /></li>)}</ul>}
-    </article>
-  </main>
+      {story.sequence === 'IMPROVE' && story.interpretation && (
+        <section class="case-section case-interpretation" aria-labelledby="interpretation-title">
+          <div class="case-section__label"><span>04</span><span>What this demonstrates</span></div>
+          <div class="case-section__body case-reading">
+            <h2 id="interpretation-title">{story.interpretation.heading}</h2>
+            <p>{story.interpretation.body}</p>
+            {story.contribution && <ol class="transformation-sequence" aria-label="From repetition to standardization">{story.contribution.map((item) => <li>{item}</li>)}</ol>}
+            <ul class="demonstrates-list">{story.demonstrates?.map((item) => <li>{item}</li>)}</ul>
+          </div>
+        </section>
+      )}
+
+      {story.sequence === 'EXPLORE' && (
+        <>
+          <section class="case-section case-meaning" aria-labelledby="meaning-title">
+            <div class="case-section__label"><span>04</span><span>Why it matters</span></div>
+            <div class="case-section__body case-reading">
+              <h2 id="meaning-title">An expanding edge, grounded in SAP</h2>
+              <p>Amr’s core remains Finance and SAP business processes. This PoC represents a developing capability that extends that foundation into SAP BTP application concepts, business context, AI agents, and decision support.</p>
+              <h3 class="case-subheading">What this project demonstrates</h3>
+              <ul class="demonstrates-list">{story.demonstrates?.map((item) => <li>{item}</li>)}</ul>
+            </div>
+          </section>
+          <section class="foundation-path" aria-label="Professional foundation and developing capabilities">
+            <p>Capabilities build on the foundation</p>
+            <ol><li>Finance</li><li>SAP</li><li>Business Process</li><li>Data &amp; Automation</li><li>BTP &amp; Applied AI</li></ol>
+          </section>
+        </>
+      )}
+
+      {story.technologies && (
+        <section class="case-section case-context" aria-labelledby="context-title">
+          <div class="case-section__label"><span>05</span><span>Tools and context</span></div>
+          <div class="case-section__body">
+            <h2 id="context-title">{story.sequence === 'SEE' ? 'Tools / context' : story.sequence === 'EXPLORE' ? 'Technologies explored' : 'Project context'}</h2>
+            <ul class="tool-list">{story.technologies.map((item) => <li>{item}</li>)}</ul>
+            {story.contextNote && <p class="context-note">{story.contextNote}</p>}
+          </div>
+        </section>
+      )}
+
+      <section class="case-closing" aria-labelledby="closing-title">
+        <p class="case-section__kicker">{story.sequence === 'SEE' ? 'WHAT THIS PROJECT CONNECTS' : story.sequence === 'IMPROVE' ? 'THE PROCESS IMPROVEMENT BRIDGE' : 'AN EXPLORATORY TEAM HACKATHON PoC'}</p>
+        <h2 id="closing-title">{story.closing}</h2>
+      </section>
+
+      <CaseStudyProgression current={project.id} />
+
+      <nav class="case-next" aria-label="Previous and next case studies">
+        {previous ? <a href={previous.href}><span>← Previous</span><strong>{previous.title}</strong></a> : <a href="/#work"><span>← Back</span><strong>Selected work</strong></a>}
+        {next ? <a class="case-next__forward" href={next.href}><span>Next project →</span><strong>{next.title}</strong></a> : <a class="case-next__forward" href="/#work"><span>Continue</span><strong>All selected work ↑</strong></a>}
+      </nav>
+    </main>
+    <footer class="site-footer">
+      <div class="page-width"><a href="/#top">{brandName}</a><span>Finance × SAP × Business Transformation</span><a href="#top" class="back-to-top">Back to top ↑</a></div>
+    </footer>
+  </div>
 </BaseLayout>

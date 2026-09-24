@@ -1,0 +1,27 @@
+---
+interface Props {
+  current: string;
+}
+
+const { current } = Astro.props;
+const steps = [
+  { id: 'sap-support-analytics-power-bi', number: '01', verb: 'SEE', title: 'SAP Support Analytics', note: 'Use operational data to understand what is happening.', href: '/projects/sap-support-analytics-power-bi/' },
+  { id: 'master-data-automation-initiative', number: '02', verb: 'IMPROVE', title: 'Master Data Automation', note: 'Redesign a repetitive cross-company process.', href: '/projects/master-data-automation-initiative/' },
+  { id: 'ai-maintenance-planner', number: '03', verb: 'EXPLORE', title: 'AI Maintenance Planner', note: 'Explore AI-assisted decision support on SAP BTP.', href: '/projects/ai-maintenance-planner/' },
+];
+---
+
+<nav class="case-progression" aria-label="Project story: see, improve, explore">
+  <p class="case-progression__label">One professional story</p>
+  <ol>
+    {steps.map((step) => (
+      <li class:list={{ 'is-current': current === step.id }}>
+        <a href={step.href} aria-current={current === step.id ? 'page' : undefined}>
+          <span class="case-progression__eyebrow"><span>{step.number}</span>{step.verb}</span>
+          <strong>{step.title}</strong>
+          <span class="case-progression__note">{step.note}</span>
+        </a>
+      </li>
+    ))}
+  </ol>
+</nav>

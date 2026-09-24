@@ -1,0 +1,61 @@
+---
+interface Props {
+  kind: 'analytics' | 'process' | 'agent';
+  before?: string[];
+  after?: string[];
+}
+
+const { kind, before = [], after = [] } = Astro.props;
+const analyticsSteps = [
+  { title: 'SAP support', note: 'Operational activity across companies' },
+  { title: 'Data', note: 'Ticket, workload, problem and resolution information' },
+  { title: 'Patterns', note: 'Recurrence, workload and critical issues' },
+  { title: 'Root-cause opportunities', note: 'Signals for further investigation' },
+  { title: 'Process improvement', note: 'Standardization or potential automation to explore' },
+];
+const agentSteps = [
+  { title: 'Maintenance context', note: 'Order and operation data' },
+  { title: 'SAP application + structured data', note: 'SAP CAP concepts · HANA Cloud · APIs' },
+  { title: 'AI-assisted reasoning', note: 'Joule / AI agent concepts' },
+  { title: 'Recommended next action', note: 'Readiness · blockers · risks' },
+  { title: 'Human decision', note: 'The planner evaluates the recommendation' },
+];
+---
+
+{kind === 'analytics' && (
+  <figure class="study-visual study-visual--analytics" aria-labelledby="analytics-flow-title">
+    <figcaption id="analytics-flow-title"><span class="study-kicker">FROM DATA TO IMPROVEMENT</span><h2>Make operational patterns visible for investigation.</h2></figcaption>
+    <ol class="analytics-flow">
+      {analyticsSteps.map((step) => <li><strong>{step.title}</strong><span>{step.note}</span></li>)}
+    </ol>
+    <p class="study-visual__note">Patterns prompt further investigation; they do not establish root causes.</p>
+  </figure>
+)}
+
+{kind === 'process' && (
+  <figure class="study-visual study-visual--process" aria-labelledby="process-flow-title">
+    <figcaption id="process-flow-title"><span class="study-kicker">FROM REPETITION TO STANDARDIZATION</span><h2>Rethink how a cross-company need enters the process.</h2></figcaption>
+    <div class="before-after">
+      <section aria-labelledby="before-title">
+        <h3 id="before-title"><span>BEFORE</span> Separate company requests</h3>
+        <ol>{before.map((step, index) => <li><span>{String(index + 1).padStart(2, '0')}</span>{step}</li>)}</ol>
+      </section>
+      <div class="before-after__divider" aria-hidden="true">→</div>
+      <section aria-labelledby="after-title">
+        <h3 id="after-title"><span>AFTER</span> Consolidated request flow</h3>
+        <ol>{after.map((step, index) => <li><span>{String(index + 1).padStart(2, '0')}</span>{step}</li>)}</ol>
+      </section>
+    </div>
+    <p class="study-visual__note">A process concept illustrating consolidated requests; it does not specify unverified workflow or system steps.</p>
+  </figure>
+)}
+
+{kind === 'agent' && (
+  <figure class="study-visual study-visual--agent" aria-labelledby="agent-flow-title">
+    <figcaption id="agent-flow-title"><span class="study-kicker">HOW THE CONCEPT FIT TOGETHER</span><h2>An exploratory path from maintenance context to decision support.</h2></figcaption>
+    <ol class="agent-flow">
+      {agentSteps.map((step) => <li><span class="agent-flow__node" aria-hidden="true"></span><div><strong>{step.title}</strong><span>{step.note}</span></div></li>)}
+    </ol>
+    <p class="study-visual__note">Conceptual flow only. Recommended actions remain subject to human judgment.</p>
+  </figure>
+)}
