@@ -42,7 +42,7 @@ const coreSkills = skills
 const expandingSkills = skills
   .filter(({ data }) => data.exposure !== 'professional-experience')
   .sort((a, b) => a.data.category.localeCompare(b.data.category) || a.data.order - b.data.order);
-const dateLabel = (date: string | null, long = false) => {
+const dateLabel = (date: string | undefined, long = false) => {
   if (!date) return 'Present';
   const [year, month] = date.split('-').map(Number);
   return new Intl.DateTimeFormat('en', { month: long ? 'long' : 'short', year: 'numeric', timeZone: 'UTC' }).format(new Date(Date.UTC(year, month - 1, 1)));

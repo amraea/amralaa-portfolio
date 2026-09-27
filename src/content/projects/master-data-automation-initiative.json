@@ -8,7 +8,6 @@
   "challenge": "Master Data requests were submitted separately for each company.",
   "solution": "Consolidated Master Data requests across companies instead of handling a separate request for each company.",
   "myRole": "Contributed to the original business idea, business-requirements clarification, process design, User Acceptance Testing (UAT), and solution development.",
-  "teamContext": null,
   "technologies": [],
   "metrics": [
     {
@@ -17,11 +16,6 @@
       "unit": "companies"
     }
   ],
-  "coverImage": null,
   "gallery": [],
-  "date": null,
-  "linkedinUrl": null,
-  "githubUrl": null,
-  "demoUrl": null,
   "lessonsLearned": []
 }

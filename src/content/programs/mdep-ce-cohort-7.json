@@ -5,7 +5,5 @@
   "location": "San Ramon, California",
   "date": "August 2026",
   "summary": "Cohort 7 program. Relevant learning and hands-on exposure included SAP BTP, CAP, SAP HANA Cloud, APIs, SAP Build, Joule Studio, AI agents and agentic workflows, and SAP Business Data Cloud.",
-  "teamContext": null,
-  "relatedProjects": ["ai-maintenance-planner"],
-  "url": null
+  "relatedProjects": ["ai-maintenance-planner"]
 }

@@ -34,23 +34,30 @@ content:
             label: Short bio
             type: text
             required: true
+          - name: location
+            label: Location
+            type: string
+            required: false
           - name: email
             label: Email
             type: string
             required: true
             pattern: "^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$"
-            description: Use a valid email. To remove this contact, make that change through a reviewed JSON edit so null is preserved.
+            description: Keep a valid email address. To remove it, use a reviewed JSON edit; blank email values fail Astro validation.
           - name: phone
             label: Phone
             type: string
-            required: true
-            description: Public phone contact. Do not leave blank; use a reviewed JSON edit to represent null.
+            required: false
           - name: linkedin
             label: LinkedIn
             type: string
             required: true
             pattern: "^https?://.+"
-            description: Use a complete URL. Use a reviewed JSON edit to represent null.
+            description: Keep a complete URL. Do not clear this control; blank URLs fail Astro validation.
+          - name: availability
+            label: Availability
+            type: string
+            required: false
           - name: impactMetrics
             label: Impact metrics
             type: object
@@ -90,6 +97,7 @@ content:
         operations:
           create: false
           rename: false
+          delete: false
         fields:
           - name: company
             label: Company
@@ -99,16 +107,30 @@ content:
             label: Role
             type: string
             required: true
+          - name: location
+            label: Location
+            type: string
+            required: false
           - name: startDate
             label: Start date (YYYY-MM)
             type: string
             required: true
             pattern: "^\\d{4}-\\d{2}$"
+          - name: endDate
+            label: End date (YYYY-MM)
+            type: string
+            required: false
+            pattern: "^\\d{4}-\\d{2}$"
+            description: Leave absent only for a current role. Do not change supplied historical dates or overlaps.
           - name: currentRole
             label: Current role
             type: boolean
             required: true
             default: false
+          - name: summary
+            label: Summary
+            type: text
+            required: false
           - name: responsibilities
             label: Responsibilities
             type: string
@@ -172,6 +194,24 @@ content:
             options:
               values: [production, analytics, initiative, poc, hackathon, experimental]
             description: Classifies the work. Do not label a PoC or initiative as production work.
+          - name: status
+            label: Delivery status
+            type: select
+            required: false
+            options:
+              values: [completed, in-progress, planned]
+          - name: deploymentStatus
+            label: Deployment status
+            type: select
+            required: false
+            options:
+              values: [production, non-production]
+            description: State deployment status accurately; a PoC or initiative is not a production deployment.
+          - name: developmentContext
+            label: Development context
+            type: string
+            required: false
+            description: Name a program or learning context without implying that it owns the project.
           - name: featured
             label: Feature on homepage
             type: boolean
@@ -186,6 +226,39 @@ content:
             label: Short description
             type: text
             required: true
+          - name: businessContext
+            label: Business context
+            type: text
+            required: false
+          - name: challenge
+            label: Challenge
+            type: text
+            required: false
+          - name: solution
+            label: Solution
+            type: text
+            required: false
+          - name: myRole
+            label: My role
+            type: text
+            required: false
+            description: Describe verified contribution. Do not imply sole ownership, development, or architecture.
+          - name: teamContext
+            label: Team context
+            type: text
+            required: false
+            description: Preserve team attribution and distinguish team outcomes from individual contribution.
+          - name: technologies
+            label: Technologies
+            type: string
+            list: true
+            required: true
+            default: []
+          - name: impact
+            label: Impact / scope
+            type: text
+            required: false
+            description: Report verified scope only. Do not imply measured outcomes that were not established.
           - name: metrics
             label: Scope metrics
             type: object
@@ -214,6 +287,13 @@ content:
                 label: Context / qualifier
                 type: string
                 required: false
+          - name: coverImage
+            label: Cover image
+            type: image
+            required: false
+            options:
+              media: portfolio_images
+              path: projects
           - name: gallery
             label: Gallery image paths
             type: image
@@ -224,18 +304,21 @@ content:
               media: portfolio_images
               path: projects
             description: Stored as public /images/ paths under the projects media folder.
+          - name: date
+            label: Project date
+            type: string
+            required: false
+          - name: organization
+            label: Organization (verified relationship only)
+            type: string
+            required: false
           - name: lessonsLearned
             label: Lessons learned
             type: string
             list: true
             required: true
             default: []
-          - name: technologies
-            label: Technologies
-            type: string
-            list: true
-            required: true
-            default: []
+          # Optional URL fields remain protected: clearing CMS URL controls may serialize an invalid empty string.
 
       - name: certifications
         label: Certifications
@@ -251,7 +334,7 @@ content:
             sort: issueDate
             order: desc
         operations:
-          create: false
+          create: true
           rename: false
           delete: false
         fields:
@@ -266,13 +349,29 @@ content:
           - name: issueDate
             label: Issue date (YYYY-MM)
             type: string
-            required: true
+            required: false
             pattern: "^\\d{4}-\\d{2}$"
+          - name: expiryDate
+            label: Expiry date (YYYY-MM)
+            type: string
+            required: false
+            pattern: "^\\d{4}-\\d{2}$"
+          - name: credentialId
+            label: Credential ID
+            type: string
+            required: false
           - name: featured
             label: Feature certification
             type: boolean
             required: true
             default: false
+          - name: logo
+            label: Logo
+            type: image
+            required: false
+            options:
+              media: portfolio_images
+              path: certifications
           - name: relatedSkills
             label: Related skills
             type: select
@@ -298,6 +397,7 @@ content:
                 - sit-uat-validation
                 - treasury
             description: Stores exact Astro skill entry IDs. Update options if skill IDs change.
+          # Optional credentialUrl remains protected because a blank URL would fail Astro validation.
 
       - name: education
         label: Education
@@ -313,7 +413,7 @@ content:
             sort: endDate
             order: desc
         operations:
-          create: false
+          create: true
           rename: false
           delete: false
         fields:
@@ -325,6 +425,26 @@ content:
             label: Qualification
             type: string
             required: true
+          - name: fieldOfStudy
+            label: Field of study
+            type: string
+            required: false
+          - name: location
+            label: Location
+            type: string
+            required: false
+          - name: startDate
+            label: Start date
+            type: string
+            required: false
+          - name: endDate
+            label: End date
+            type: string
+            required: false
+          - name: summary
+            label: Summary
+            type: text
+            required: false
           - name: relatedSkills
             label: Related skills
             type: select
@@ -376,14 +496,27 @@ content:
             required: true
             options:
               values: [program, award, achievement, participation]
+          - name: organization
+            label: Organization
+            type: string
+            required: false
+          - name: location
+            label: Location
+            type: string
+            required: false
+          - name: date
+            label: Date
+            type: string
+            required: false
           - name: summary
             label: Summary
             type: text
             required: true
-          - name: organization
-            label: Organization
-            type: string
-            required: true
+          - name: teamContext
+            label: Team context
+            type: text
+            required: false
+            description: Keep team achievements attributed to the team.
           - name: relatedProjects
             label: Related projects
             type: select
@@ -398,7 +531,8 @@ content:
                   label: Master Data Automation Initiative
                 - name: ai-maintenance-planner
                   label: AI Maintenance Planner — SAP MDEP-CE Cohort 7
-            description: Stores exact Astro project entry IDs. Update options if project IDs change.
+            description: Stores exact Astro project entry IDs. Update these options if project IDs change.
+          # Optional url remains protected because a blank URL would fail Astro validation.
 
       - name: skills
         label: Skills
@@ -411,6 +545,7 @@ content:
           fields: [name, category, exposure, order]
           sort: [category, order]
         operations:
+          create: true
           rename: false
           delete: false
         fields:
@@ -439,6 +574,10 @@ content:
             options:
               values: [professional-experience, project-experience, hands-on-exposure, positioning]
             description: Controls whether the site presents this as established/core experience or an expanding capability. Do not promote BTP or AI to professional experience without evidence.
+          - name: evidence
+            label: Evidence
+            type: text
+            required: false
           - name: order
             label: Order within category
             type: number
