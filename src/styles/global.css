@@ -172,7 +172,7 @@ button, summary { font: inherit; }
 .role-timeline h4 { margin: 0; font-size: 15px; font-weight: 670; line-height: 1.4; }
 .role-timeline p { margin: 2px 0 0; color: var(--muted); font-size: 13px; }
 
-.credentials-grid { display: grid; grid-template-columns: .78fr 1.22fr; border: 1px solid var(--line); background: var(--white); }
+.credentials-grid { display: grid; grid-template-columns: 1fr 1fr; border: 1px solid var(--line); background: var(--white); }
 .credentials-grid--programs-only { display: block; border: 0; background: transparent; }
 .credentials-panel { padding: clamp(23px, 4vw, 40px); }
 .credentials-panel--programs { border-left: 1px solid var(--line); background: #f9fafb; }
@@ -180,15 +180,23 @@ button, summary { font: inherit; }
 .credentials-panel h3 { margin: 12px 0 0; font-size: 23px; font-weight: 630; letter-spacing: -.035em; }
 .credentials-empty { margin: 21px 0 0; color: var(--muted); font-size: 12px; line-height: 1.7; }
 .credential-list, .program-list { margin: 21px 0 0; padding: 0; list-style: none; }
-.credential-list li { display: grid; gap: 3px; padding: 13px 0; border-top: 1px solid var(--line); font-size: 12px; }
-.credential-list li span { color: var(--muted); }
-.education-list { margin-top: 31px; padding-top: 20px; border-top: 1px solid var(--line); }
-.education-list h4 { margin: 0; font-size: 11px; letter-spacing: .1em; text-transform: uppercase; }
-.education-list p { color: var(--muted); font-size: 12px; }
+.credential-list li { display: grid; gap: 4px; padding: 14px 0; border-top: 1px solid var(--line); font-size: 14px; line-height: 1.5; }
+.credential-list li strong { color: var(--ink); font-size: 15px; font-weight: 670; }
+.credential-list li span, .credential-list__date { color: var(--muted); font-size: 13px; }
+.credential-list__date { font-variant-numeric: tabular-nums; }
+.education-list { margin-top: 26px; padding-top: 21px; border-top: 1px solid var(--line); }
+.education-list h3 { margin-top: 8px; }
+.education-list ol { display: grid; gap: 0; margin: 17px 0 0; padding: 0; list-style: none; }
+.education-list li { display: grid; gap: 4px; padding: 12px 0; border-top: 1px solid var(--line); }
+.education-list li > div { display: flex; flex-wrap: wrap; gap: 5px 9px; align-items: baseline; }
+.education-list li strong { color: var(--ink); font-size: 14px; font-weight: 670; }
+.education-list li span, .education-list li p { margin: 0; color: var(--muted); font-size: 13px; line-height: 1.5; }
+.education-list li time { font-variant-numeric: tabular-nums; }
 .program-list li { display: grid; grid-template-columns: 105px minmax(0, 1fr); gap: 18px; padding: 17px 0; border-top: 1px solid var(--line); }
 .program-list__type { padding-top: 3px; color: var(--blue-deep); font-size: 12px; font-weight: 760; letter-spacing: .06em; text-transform: uppercase; }
 .program-list h4 { margin: 0; font-size: 16px; font-weight: 680; line-height: 1.45; }
-.program-list li div > p { margin: 3px 0 0; color: var(--muted); font-size: 14px; }
+.program-list li div > p { margin: 4px 0 0; color: var(--muted); font-size: 14px; }
+.program-list li div > .program-list__meta { font-size: 12px; line-height: 1.5; }
 .program-list li div > .program-list__summary { margin-top: 7px; line-height: 1.6; }
 
 .contact-section { padding-block: clamp(56px, 6vw, 76px); background: var(--ink); color: var(--white); }

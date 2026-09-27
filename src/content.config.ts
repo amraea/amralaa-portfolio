@@ -144,6 +144,7 @@ const programs = defineCollection({
     title: z.string(),
     type: z.enum(['program', 'award', 'achievement', 'participation']),
     organization: z.string().nullable(),
+    location: z.string().nullable().optional(),
     date: z.string().nullable(),
     summary: z.string(),
     teamContext: z.string().nullable(),

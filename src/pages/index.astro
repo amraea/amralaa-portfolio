@@ -22,6 +22,10 @@ const egpc = experiences.find(({ data }) => data.company.includes('EGPC'));
 const corcRoles = experiences
   .filter(({ data }) => data.company.includes('CORC'))
   .sort((a, b) => a.data.startDate.localeCompare(b.data.startDate));
+const orderedCertifications = certifications.sort((a, b) => (b.data.issueDate ?? '').localeCompare(a.data.issueDate ?? ''));
+const orderedEducation = education.sort((a, b) => (a.data.endDate ?? '').localeCompare(b.data.endDate ?? ''));
+const programOrder: Record<string, number> = { 'mdep-ce-cohort-7': 0, 'mdep-hackathon-win': 1, depi: 2 };
+const orderedPrograms = programs.sort((a, b) => (programOrder[a.id] ?? 99) - (programOrder[b.id] ?? 99));
 const orderedProjects = projects.sort((a, b) => a.data.order - b.data.order);
 const coreSkills = skills
   .filter(({ data }) => data.exposure === 'professional-experience')
@@ -33,6 +37,10 @@ const dateLabel = (date: string | null, long = false) => {
   if (!date) return 'Present';
   const [year, month] = date.split('-').map(Number);
   return new Intl.DateTimeFormat('en', { month: long ? 'long' : 'short', year: 'numeric', timeZone: 'UTC' }).format(new Date(Date.UTC(year, month - 1, 1)));
+};
+const monthYearLabel = (date: string) => {
+  const [year, month] = date.split('-').map(Number);
+  return new Intl.DateTimeFormat('en', { month: 'long', year: 'numeric', timeZone: 'UTC' }).format(new Date(Date.UTC(year, month - 1, 1)));
 };
 const exposureLabel = (exposure: string) => ({
   'professional-experience': 'Professional experience',
@@ -203,20 +211,17 @@ const portrait = '/images/Gemini_Generated_Image_fawrrsfawrrsfawr.png';
       <section id="credentials" class="section section--paper">
         <div class="page-width">
           <SectionHeading eyebrow="Credentials and programs" title="Learning in practice" description="Programs and team recognition are shown separately from formal education and certifications." />
-          <div class:list={["credentials-grid", { 'credentials-grid--programs-only': certifications.length === 0 && education.length === 0 }]}>
-            {(certifications.length > 0 || education.length > 0) && (
-              <section class="credentials-panel" aria-labelledby={certifications.length > 0 ? 'certifications-title' : 'education-title'}>
-                <span class="section-index">FORMAL CREDENTIALS</span>
-                {certifications.length > 0 && <><h3 id="certifications-title">Certifications</h3><ul class="credential-list">{certifications.map(({ data }) => <li><strong>{data.name}</strong><span>{data.issuer}</span></li>)}</ul></>}
-                {education.length > 0 && <div class="education-list"><h3 id="education-title">Education</h3>{education.map(({ data }) => <p><strong>{data.qualification}</strong> · {data.institution}</p>)}</div>}
+          <div class="credentials-grid">
+            <section class="credentials-panel credentials-panel--formal" aria-label="Formal certifications and education">
+              {orderedCertifications.length > 0 && <section aria-labelledby="certifications-title"><span class="section-index">FORMAL CERTIFICATIONS</span><h3 id="certifications-title">Certifications</h3><ul class="credential-list">{orderedCertifications.map(({ data }) => <li><strong>{data.name}</strong><span>{data.issuer}</span>{data.issueDate && <time class="credential-list__date" datetime={data.issueDate}>{`Passed ${monthYearLabel(data.issueDate)}`}</time>}</li>)}</ul></section>}
+              {orderedEducation.length > 0 && <section class="education-list" aria-labelledby="education-title"><span class="section-index">EDUCATION</span><h3 id="education-title">Education</h3><ol>{orderedEducation.map(({ data }) => <li><div><strong>{data.qualification}</strong>{data.fieldOfStudy && <span>{data.fieldOfStudy}</span>}</div><p>{data.institution}{data.endDate && <> · <time datetime={data.endDate}>{data.endDate}</time></>}</p></li>)}</ol></section>}
               </section>
-            )}
             <section class="credentials-panel credentials-panel--programs" aria-labelledby="programs-title">
-              <span class="section-index">PROGRAMS &amp; RECOGNITION</span>
-              <h3 id="programs-title">Programs and achievements</h3>
+              <span class="section-index">PROGRAMS &amp; ACHIEVEMENTS</span>
+              <h3 id="programs-title">Selected programs and recognition</h3>
               <ul class="program-list">
-                {programs.map(({ data }) => (
-                  <li><span class="program-list__type">{data.type}</span><div><h4>{data.title}</h4>{data.organization && <p>{data.organization}</p>}<p class="program-list__summary">{data.summary}</p></div></li>
+                {orderedPrograms.map(({ data }) => (
+                  <li><span class="program-list__type">{data.type === 'award' ? 'Team achievement' : 'Program'}</span><div><h4>{data.title}</h4>{((data.organization && data.organization !== data.title) || data.location || data.date) && <p class="program-list__meta">{[data.organization !== data.title ? data.organization : null, data.location, data.date].filter(Boolean).join(' · ')}</p>}<p class="program-list__summary">{data.summary}</p></div></li>
                 ))}
               </ul>
             </section>

@@ -1,9 +1,9 @@
 {
-  "title": "MDEP-CE Cohort 7 Hackathon Winner",
+  "title": "MDEP-CE Cohort 7 Hackathon Winner — AI Maintenance Planner",
   "type": "award",
-  "organization": "SAP MDEP-CE Cohort 7",
+  "organization": "BRICKS Team",
   "date": null,
-  "summary": "BRICKS won the program hackathon with the AI Maintenance Planner PoC.",
+  "summary": "Team achievement: BRICKS won the MDEP-CE Cohort 7 hackathon with the AI Maintenance Planner proof of concept.",
   "teamContext": "BRICKS team achievement.",
   "relatedProjects": ["ai-maintenance-planner"],
   "url": null

@@ -1,9 +1,9 @@
 {
-  "title": "DEPI",
+  "title": "Digital Egypt Pioneers Initiative (DEPI)",
   "type": "program",
-  "organization": null,
+  "organization": "Digital Egypt Pioneers Initiative (DEPI)",
   "date": null,
-  "summary": "The SAP Support Analytics — Power BI project was developed through DEPI.",
+  "summary": "Data Analytics / Power BI Specialist track. The SAP Support Analytics — Power BI project was developed through this program.",
   "teamContext": null,
   "relatedProjects": ["sap-support-analytics-power-bi"],
   "url": null
