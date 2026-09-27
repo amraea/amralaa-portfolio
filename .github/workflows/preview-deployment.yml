@@ -1,0 +1,102 @@
+name: Preview deployment verification
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  verify-preview:
+    if: github.ref == 'refs/heads/rebuild/astro'
+    runs-on: ubuntu-latest
+    environment:
+      name: preview
+      url: https://preview.amralaa.site
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+
+      - name: Set up Node.js and pnpm
+        uses: pnpm/setup@v3
+        with:
+          runtime: node@24
+          install: false
+          cache: true
+
+      - name: Install locked dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build static site
+        run: pnpm build
+
+      - name: Verify generated files
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -d dist
+          required_files=(
+            dist/index.html
+            dist/404.html
+            dist/sitemap-index.xml
+            dist/robots.txt
+            dist/favicon.svg
+            dist/assets/cv.pdf
+            dist/images/Gemini_Generated_Image_fawrrsfawrrsfawr.png
+            dist/projects/ai-maintenance-planner/index.html
+            dist/projects/master-data-automation-initiative/index.html
+            dist/projects/sap-support-analytics-power-bi/index.html
+          )
+          for file in "${required_files[@]}"; do
+            test -f "$file"
+          done
+          file_count=$(find dist -type f | wc -l | tr -d ' ')
+          printf 'Build succeeded; generated files: %s\n' "$file_count"
+
+      - name: Verify preview SSH access and target directory
+        shell: bash
+        env:
+          PREVIEW_SSH_HOST: ${{ secrets.PREVIEW_SSH_HOST }}
+          PREVIEW_SSH_PORT: ${{ secrets.PREVIEW_SSH_PORT }}
+          PREVIEW_SSH_USER: ${{ secrets.PREVIEW_SSH_USER }}
+          PREVIEW_SSH_PRIVATE_KEY: ${{ secrets.PREVIEW_SSH_PRIVATE_KEY }}
+          PREVIEW_REMOTE_PATH: ${{ vars.PREVIEW_REMOTE_PATH }}
+        run: |
+          set -euo pipefail
+
+          [[ "$PREVIEW_SSH_HOST" =~ ^[A-Za-z0-9.-]+$ ]]
+          [[ "$PREVIEW_SSH_PORT" =~ ^[0-9]+$ ]]
+          (( PREVIEW_SSH_PORT > 0 && PREVIEW_SSH_PORT <= 65535 ))
+          [[ "$PREVIEW_SSH_USER" =~ ^[A-Za-z0-9._-]+$ ]]
+          [[ "$PREVIEW_REMOTE_PATH" =~ ^/[A-Za-z0-9_./-]+$ ]]
+          [[ ! "$PREVIEW_REMOTE_PATH" =~ (^|/)\.\.(/|$) ]]
+          [[ "${PREVIEW_REMOTE_PATH##*/}" == "website_538966dc" ]]
+
+          umask 077
+          mkdir -p "$HOME/.ssh"
+          key_file="$HOME/.ssh/preview_ed25519"
+          known_hosts="$HOME/.ssh/known_hosts"
+          printf '%s\n' "$PREVIEW_SSH_PRIVATE_KEY" > "$key_file"
+
+          ssh-keyscan -H -p "$PREVIEW_SSH_PORT" "$PREVIEW_SSH_HOST" >> "$known_hosts" 2>/dev/null
+          test -s "$known_hosts"
+
+          ssh_options=(
+            -i "$key_file"
+            -p "$PREVIEW_SSH_PORT"
+            -o BatchMode=yes
+            -o IdentitiesOnly=yes
+            -o StrictHostKeyChecking=yes
+            -o "UserKnownHostsFile=$known_hosts"
+            -o ConnectTimeout=15
+          )
+          target="$PREVIEW_SSH_USER@$PREVIEW_SSH_HOST"
+
+          ssh "${ssh_options[@]}" "$target" true
+          printf 'SSH connection success\n'
+
+          remote_check="test -d '$PREVIEW_REMOTE_PATH'"
+          ssh "${ssh_options[@]}" "$target" "$remote_check"
+          printf 'Remote target directory exists\n'
