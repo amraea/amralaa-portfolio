@@ -24,10 +24,10 @@ The repository-root `.pages.yml` configures Pages CMS to edit the existing JSON 
 
 Project filenames are application IDs. They determine project URLs, Astro entry IDs, cross-content references, and the narrative lookup in `src/content/caseStudies.ts`. The CMS therefore allows editing existing projects but disables project creation, renaming, and deletion. Adding a project requires a coordinated source change and matching case-study narrative.
 
-The profile is one fixed file. Its resume path is hidden and read-only; the stable CV route is `/assets/cv.pdf`, which is intentionally outside CMS-managed media. Do not upload or manage the CV through Pages CMS.
+The profile is one fixed file. Its resume path is not exposed in the CMS; the stable CV route is `/assets/cv.pdf`, which is intentionally outside CMS-managed media. Do not upload or manage the CV through Pages CMS.
 
 The current homepage sorts the three programs using a hardcoded ID-to-order map in `src/pages/index.astro`. New or renamed program IDs will not automatically receive a deliberate position; update that map in a reviewed source change if the ordering needs to change.
 
-Astro and Pages CMS do not share a runtime schema. In particular, Pages CMS does not document a guaranteed `null` serialization behavior for blank string fields. The configuration protects nullable URL fields from ordinary editing and uses merge mode to preserve fields not exposed in the editor, but do not clear nullable values casually. Use a reviewed JSON edit when a field must be set to `null`, then run the production build. Cross-content selectors store the current exact Astro entry IDs; update their fixed choices if IDs change.
+Astro and Pages CMS do not share a runtime schema. Pages CMS validates configured string fields as strings, so a stored JSON `null` causes an error such as `Expected string, received null`. Fields that are null in current entries are deliberately omitted from the corresponding CMS forms; `settings.content.merge: true` preserves them during edits. This means those nullable fields require a reviewed JSON edit when they need to change. Collections whose required Astro fields include omitted nullable values have creation disabled so the CMS cannot create incomplete entries. Cross-content selectors store the current exact Astro entry IDs; update their fixed choices if IDs change.
 
 For normal editing, use a content branch and review/build before merging. Do not treat the CMS form as a substitute for Astro build validation.

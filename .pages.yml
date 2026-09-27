@@ -51,30 +51,6 @@ content:
             required: true
             pattern: "^https?://.+"
             description: Use a complete URL. Use a reviewed JSON edit to represent null.
-          - name: github
-            label: GitHub (protected nullable URL)
-            type: string
-            required: false
-            default: null
-            hidden: true
-            description: Hidden because blank string is not equivalent to null; change through a reviewed JSON edit.
-          - name: location
-            label: Location
-            type: string
-            required: false
-            default: null
-          - name: availability
-            label: Availability
-            type: string
-            required: false
-            default: null
-          - name: resume
-            label: Resume path (protected)
-            type: string
-            required: true
-            default: /assets/cv.pdf
-            hidden: true
-            readonly: true
           - name: impactMetrics
             label: Impact metrics
             type: object
@@ -106,12 +82,13 @@ content:
         filename: "{role}.json"
         view:
           primary: role
-          fields: [role, company, startDate, endDate, currentRole]
+          fields: [role, company, startDate, currentRole]
           sort: [startDate, role]
           default:
             sort: startDate
             order: desc
         operations:
+          create: false
           rename: false
         fields:
           - name: company
@@ -127,28 +104,11 @@ content:
             type: string
             required: true
             pattern: "^\\d{4}-\\d{2}$"
-          - name: endDate
-            label: End date (YYYY-MM)
-            type: string
-            required: false
-            default: null
-            pattern: "^\\d{4}-\\d{2}$"
-            description: Keep YYYY-MM for a dated role. For a current role, use a reviewed JSON edit to preserve null.
           - name: currentRole
             label: Current role
             type: boolean
             required: true
             default: false
-          - name: location
-            label: Location
-            type: string
-            required: false
-            default: null
-          - name: summary
-            label: Summary
-            type: text
-            required: false
-            default: null
           - name: responsibilities
             label: Responsibilities
             type: string
@@ -254,68 +214,6 @@ content:
                 label: Context / qualifier
                 type: string
                 required: false
-          - name: status
-            label: Delivery status
-            type: select
-            required: false
-            default: null
-            options:
-              values: [completed, in-progress, planned]
-            description: Optional delivery status. Use only the exact supported status; do not imply deployment.
-          - name: deploymentStatus
-            label: Deployment status
-            type: select
-            required: false
-            default: null
-            options:
-              values: [production, non-production]
-            description: Use production only when a production deployment is verified. Blank/null values need a reviewed JSON edit.
-          - name: developmentContext
-            label: Development / program context
-            type: text
-            required: false
-          - name: businessContext
-            label: Business context
-            type: text
-            required: false
-            default: null
-            description: Keep verified context; an empty string is distinct from null.
-          - name: challenge
-            label: Challenge
-            type: text
-            required: false
-            default: null
-          - name: solution
-            label: Solution
-            type: text
-            required: false
-            default: null
-          - name: myRole
-            label: My role
-            type: text
-            required: false
-            default: null
-            description: Describe contribution accurately. Do not imply sole ownership, development, or architecture.
-          - name: teamContext
-            label: Team context
-            type: text
-            required: false
-            default: null
-            description: Preserve team attribution and context. Do not imply sole ownership.
-          - name: impact
-            label: Impact / scope statement
-            type: text
-            required: false
-            description: Do not claim unverified outcomes or imply opportunities were implemented.
-          - name: coverImage
-            label: Cover image path
-            type: image
-            required: false
-            default: null
-            options:
-              media: portfolio_images
-              path: projects
-            description: Stored as a public /images/ path.
           - name: gallery
             label: Gallery image paths
             type: image
@@ -326,45 +224,12 @@ content:
               media: portfolio_images
               path: projects
             description: Stored as public /images/ paths under the projects media folder.
-          - name: date
-            label: Project date
-            type: string
-            required: false
-            default: null
-            description: Keep existing text representation. Blank string is distinct from null.
-          - name: organization
-            label: Organization
-            type: string
-            required: false
-            default: null
-            description: Only use where an organization relationship is verified.
           - name: lessonsLearned
             label: Lessons learned
             type: string
             list: true
             required: true
             default: []
-          - name: linkedinUrl
-            label: LinkedIn URL
-            type: string
-            required: false
-            default: null
-            hidden: true
-            description: Hidden because a blank value would fail Astro URL validation.
-          - name: githubUrl
-            label: GitHub URL
-            type: string
-            required: false
-            default: null
-            hidden: true
-            description: Hidden because a blank value would fail Astro URL validation.
-          - name: demoUrl
-            label: Demo URL
-            type: string
-            required: false
-            default: null
-            hidden: true
-            description: Hidden because a blank value would fail Astro URL validation.
           - name: technologies
             label: Technologies
             type: string
@@ -386,6 +251,7 @@ content:
             sort: issueDate
             order: desc
         operations:
+          create: false
           rename: false
           delete: false
         fields:
@@ -407,33 +273,6 @@ content:
             type: boolean
             required: true
             default: false
-          - name: expiryDate
-            label: Expiry date (YYYY-MM)
-            type: string
-            required: false
-            default: null
-          - name: credentialId
-            label: Credential ID
-            type: string
-            required: false
-            default: null
-            description: Do not invent an ID. Preserve null using a reviewed JSON edit.
-          - name: credentialUrl
-            label: Credential URL
-            type: string
-            required: false
-            default: null
-            hidden: true
-            description: Hidden because a blank value would fail Astro URL validation. Add only through a reviewed JSON edit.
-          - name: logo
-            label: Logo image path
-            type: image
-            required: false
-            default: null
-            options:
-              media: portfolio_images
-              path: certifications
-            description: Optional public path to a verified local asset.
           - name: relatedSkills
             label: Related skills
             type: select
@@ -474,6 +313,7 @@ content:
             sort: endDate
             order: desc
         operations:
+          create: false
           rename: false
           delete: false
         fields:
@@ -485,31 +325,6 @@ content:
             label: Qualification
             type: string
             required: true
-          - name: fieldOfStudy
-            label: Field of study
-            type: string
-            required: false
-            default: null
-          - name: location
-            label: Location
-            type: string
-            required: false
-            default: null
-          - name: startDate
-            label: Start date
-            type: string
-            required: false
-            default: null
-          - name: endDate
-            label: End date / year
-            type: string
-            required: false
-            default: null
-          - name: summary
-            label: Summary
-            type: text
-            required: false
-            default: null
           - name: relatedSkills
             label: Related skills
             type: select
@@ -547,6 +362,7 @@ content:
           fields: [title, type, organization, date]
           sort: [title]
         operations:
+          create: false
           rename: false
           delete: false
         fields:
@@ -567,31 +383,7 @@ content:
           - name: organization
             label: Organization
             type: string
-            required: false
-            default: null
-          - name: location
-            label: Location
-            type: string
-            required: false
-            default: null
-          - name: date
-            label: Date
-            type: string
-            required: false
-            default: null
-          - name: teamContext
-            label: Team context
-            type: text
-            required: false
-            default: null
-            description: Preserve team attribution. Do not present team outcomes as individual awards.
-          - name: url
-            label: Program URL
-            type: string
-            required: false
-            default: null
-            hidden: true
-            description: Hidden because a blank value would fail Astro URL validation.
+            required: true
           - name: relatedProjects
             label: Related projects
             type: select
