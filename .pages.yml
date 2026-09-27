@@ -1,0 +1,658 @@
+media:
+  - name: portfolio_images
+    label: Portfolio images
+    input: public/images
+    output: /images
+    categories: [image]
+    extensions: [png, jpg, jpeg, webp, avif, svg]
+    rename: safe
+
+content:
+  - name: portfolio
+    label: Portfolio
+    type: group
+    items:
+      - name: profile
+        label: Profile
+        type: file
+        path: src/content/profile/profile.json
+        format: json
+        operations:
+          create: false
+          rename: false
+          delete: false
+        fields:
+          - name: name
+            label: Name
+            type: string
+            required: true
+          - name: professionalHeadline
+            label: Professional headline
+            type: text
+            required: true
+          - name: shortBio
+            label: Short bio
+            type: text
+            required: true
+          - name: email
+            label: Email
+            type: string
+            required: true
+            pattern: "^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$"
+            description: Use a valid email. To remove this contact, make that change through a reviewed JSON edit so null is preserved.
+          - name: phone
+            label: Phone
+            type: string
+            required: true
+            description: Public phone contact. Do not leave blank; use a reviewed JSON edit to represent null.
+          - name: linkedin
+            label: LinkedIn
+            type: string
+            required: true
+            pattern: "^https?://.+"
+            description: Use a complete URL. Use a reviewed JSON edit to represent null.
+          - name: github
+            label: GitHub (protected nullable URL)
+            type: string
+            required: false
+            default: null
+            hidden: true
+            description: Hidden because blank string is not equivalent to null; change through a reviewed JSON edit.
+          - name: location
+            label: Location
+            type: string
+            required: false
+            default: null
+          - name: availability
+            label: Availability
+            type: string
+            required: false
+            default: null
+          - name: resume
+            label: Resume path (protected)
+            type: string
+            required: true
+            default: /assets/cv.pdf
+            hidden: true
+            readonly: true
+          - name: impactMetrics
+            label: Impact metrics
+            type: object
+            list:
+              min: 0
+              collapsible:
+                collapsed: true
+                summary: "{label}: {value}"
+            fields:
+              - name: label
+                label: Label
+                type: string
+                required: true
+              - name: value
+                label: Value
+                type: string
+                required: true
+              - name: context
+                label: Qualifier / context
+                type: string
+                required: false
+                description: Preserve scope and qualifiers; do not add unsupported metrics.
+
+      - name: experience
+        label: Experience
+        type: collection
+        path: src/content/experience
+        format: json
+        filename: "{role}.json"
+        view:
+          primary: role
+          fields: [role, company, startDate, endDate, currentRole]
+          sort: [startDate, role]
+          default:
+            sort: startDate
+            order: desc
+        operations:
+          rename: false
+        fields:
+          - name: company
+            label: Company
+            type: string
+            required: true
+          - name: role
+            label: Role
+            type: string
+            required: true
+          - name: startDate
+            label: Start date (YYYY-MM)
+            type: string
+            required: true
+            pattern: "^\\d{4}-\\d{2}$"
+          - name: endDate
+            label: End date (YYYY-MM)
+            type: string
+            required: false
+            default: null
+            pattern: "^\\d{4}-\\d{2}$"
+            description: Keep YYYY-MM for a dated role. For a current role, use a reviewed JSON edit to preserve null.
+          - name: currentRole
+            label: Current role
+            type: boolean
+            required: true
+            default: false
+          - name: location
+            label: Location
+            type: string
+            required: false
+            default: null
+          - name: summary
+            label: Summary
+            type: text
+            required: false
+            default: null
+          - name: responsibilities
+            label: Responsibilities
+            type: string
+            list: true
+            required: true
+            default: []
+          - name: achievements
+            label: Achievements
+            type: string
+            list: true
+            required: true
+            default: []
+          - name: technologies
+            label: Technologies
+            type: string
+            list: true
+            required: true
+            default: []
+          - name: relatedProjects
+            label: Related projects
+            type: select
+            required: true
+            list: true
+            default: []
+            options:
+              values:
+                - name: sap-support-analytics-power-bi
+                  label: SAP Support Analytics — Power BI
+                - name: master-data-automation-initiative
+                  label: Master Data Automation Initiative
+                - name: ai-maintenance-planner
+                  label: AI Maintenance Planner — SAP MDEP-CE Cohort 7
+            description: Stores exact Astro project entry IDs. Update these options if project IDs change.
+
+      - name: projects
+        label: Projects (existing entries only)
+        type: collection
+        path: src/content/projects
+        format: json
+        filename: "{title}.json"
+        view:
+          primary: title
+          fields: [title, category, featured, order]
+          sort: [order, title]
+          default:
+            sort: order
+            order: asc
+        operations:
+          create: false
+          rename: false
+          delete: false
+        fields:
+          - name: title
+            label: Project title
+            type: string
+            required: true
+          - name: category
+            label: Project category
+            type: select
+            required: true
+            options:
+              values: [production, analytics, initiative, poc, hackathon, experimental]
+            description: Classifies the work. Do not label a PoC or initiative as production work.
+          - name: featured
+            label: Feature on homepage
+            type: boolean
+            required: true
+            default: false
+          - name: order
+            label: Homepage order
+            type: number
+            required: true
+            description: Controls project ordering on the homepage.
+          - name: shortDescription
+            label: Short description
+            type: text
+            required: true
+          - name: metrics
+            label: Scope metrics
+            type: object
+            list:
+              min: 0
+              collapsible:
+                collapsed: true
+                summary: "{label}: {value} {unit}"
+            required: true
+            default: []
+            description: Only verified scope facts. Do not imply measured outcomes.
+            fields:
+              - name: label
+                label: Label
+                type: string
+                required: true
+              - name: value
+                label: Value
+                type: string
+                required: true
+              - name: unit
+                label: Unit
+                type: string
+                required: false
+              - name: context
+                label: Context / qualifier
+                type: string
+                required: false
+          - name: status
+            label: Delivery status
+            type: select
+            required: false
+            default: null
+            options:
+              values: [completed, in-progress, planned]
+            description: Optional delivery status. Use only the exact supported status; do not imply deployment.
+          - name: deploymentStatus
+            label: Deployment status
+            type: select
+            required: false
+            default: null
+            options:
+              values: [production, non-production]
+            description: Use production only when a production deployment is verified. Blank/null values need a reviewed JSON edit.
+          - name: developmentContext
+            label: Development / program context
+            type: text
+            required: false
+          - name: businessContext
+            label: Business context
+            type: text
+            required: false
+            default: null
+            description: Keep verified context; an empty string is distinct from null.
+          - name: challenge
+            label: Challenge
+            type: text
+            required: false
+            default: null
+          - name: solution
+            label: Solution
+            type: text
+            required: false
+            default: null
+          - name: myRole
+            label: My role
+            type: text
+            required: false
+            default: null
+            description: Describe contribution accurately. Do not imply sole ownership, development, or architecture.
+          - name: teamContext
+            label: Team context
+            type: text
+            required: false
+            default: null
+            description: Preserve team attribution and context. Do not imply sole ownership.
+          - name: impact
+            label: Impact / scope statement
+            type: text
+            required: false
+            description: Do not claim unverified outcomes or imply opportunities were implemented.
+          - name: coverImage
+            label: Cover image path
+            type: image
+            required: false
+            default: null
+            options:
+              media: portfolio_images
+              path: projects
+            description: Stored as a public /images/ path.
+          - name: gallery
+            label: Gallery image paths
+            type: image
+            list: true
+            required: true
+            default: []
+            options:
+              media: portfolio_images
+              path: projects
+            description: Stored as public /images/ paths under the projects media folder.
+          - name: date
+            label: Project date
+            type: string
+            required: false
+            default: null
+            description: Keep existing text representation. Blank string is distinct from null.
+          - name: organization
+            label: Organization
+            type: string
+            required: false
+            default: null
+            description: Only use where an organization relationship is verified.
+          - name: lessonsLearned
+            label: Lessons learned
+            type: string
+            list: true
+            required: true
+            default: []
+          - name: linkedinUrl
+            label: LinkedIn URL
+            type: string
+            required: false
+            default: null
+            hidden: true
+            description: Hidden because a blank value would fail Astro URL validation.
+          - name: githubUrl
+            label: GitHub URL
+            type: string
+            required: false
+            default: null
+            hidden: true
+            description: Hidden because a blank value would fail Astro URL validation.
+          - name: demoUrl
+            label: Demo URL
+            type: string
+            required: false
+            default: null
+            hidden: true
+            description: Hidden because a blank value would fail Astro URL validation.
+          - name: technologies
+            label: Technologies
+            type: string
+            list: true
+            required: true
+            default: []
+
+      - name: certifications
+        label: Certifications
+        type: collection
+        path: src/content/certifications
+        format: json
+        filename: "{name}.json"
+        view:
+          primary: name
+          fields: [name, issuer, issueDate, featured]
+          sort: [issueDate, name]
+          default:
+            sort: issueDate
+            order: desc
+        operations:
+          rename: false
+          delete: false
+        fields:
+          - name: name
+            label: Certification name
+            type: string
+            required: true
+          - name: issuer
+            label: Issuer
+            type: string
+            required: true
+          - name: issueDate
+            label: Issue date (YYYY-MM)
+            type: string
+            required: true
+            pattern: "^\\d{4}-\\d{2}$"
+          - name: featured
+            label: Feature certification
+            type: boolean
+            required: true
+            default: false
+          - name: expiryDate
+            label: Expiry date (YYYY-MM)
+            type: string
+            required: false
+            default: null
+          - name: credentialId
+            label: Credential ID
+            type: string
+            required: false
+            default: null
+            description: Do not invent an ID. Preserve null using a reviewed JSON edit.
+          - name: credentialUrl
+            label: Credential URL
+            type: string
+            required: false
+            default: null
+            hidden: true
+            description: Hidden because a blank value would fail Astro URL validation. Add only through a reviewed JSON edit.
+          - name: logo
+            label: Logo image path
+            type: image
+            required: false
+            default: null
+            options:
+              media: portfolio_images
+              path: certifications
+            description: Optional public path to a verified local asset.
+          - name: relatedSkills
+            label: Related skills
+            type: select
+            list: true
+            required: true
+            default: []
+            options:
+              values:
+                - apis
+                - applied-ai
+                - hana-cloud
+                - implementation-go-live
+                - joule-ai-agents
+                - master-data-harmonization
+                - power-bi
+                - process-improvement-automation
+                - real-estate-management
+                - requirements-clarification
+                - sap-btp
+                - sap-cap
+                - sap-fi-co
+                - sap-s4hana-finance
+                - sit-uat-validation
+                - treasury
+            description: Stores exact Astro skill entry IDs. Update options if skill IDs change.
+
+      - name: education
+        label: Education
+        type: collection
+        path: src/content/education
+        format: json
+        filename: "{qualification}.json"
+        view:
+          primary: qualification
+          fields: [qualification, institution, endDate]
+          sort: [endDate, qualification]
+          default:
+            sort: endDate
+            order: desc
+        operations:
+          rename: false
+          delete: false
+        fields:
+          - name: institution
+            label: Institution
+            type: string
+            required: true
+          - name: qualification
+            label: Qualification
+            type: string
+            required: true
+          - name: fieldOfStudy
+            label: Field of study
+            type: string
+            required: false
+            default: null
+          - name: location
+            label: Location
+            type: string
+            required: false
+            default: null
+          - name: startDate
+            label: Start date
+            type: string
+            required: false
+            default: null
+          - name: endDate
+            label: End date / year
+            type: string
+            required: false
+            default: null
+          - name: summary
+            label: Summary
+            type: text
+            required: false
+            default: null
+          - name: relatedSkills
+            label: Related skills
+            type: select
+            list: true
+            required: true
+            default: []
+            options:
+              values:
+                - apis
+                - applied-ai
+                - hana-cloud
+                - implementation-go-live
+                - joule-ai-agents
+                - master-data-harmonization
+                - power-bi
+                - process-improvement-automation
+                - real-estate-management
+                - requirements-clarification
+                - sap-btp
+                - sap-cap
+                - sap-fi-co
+                - sap-s4hana-finance
+                - sit-uat-validation
+                - treasury
+            description: Stores exact Astro skill entry IDs. Update options if skill IDs change.
+
+      - name: programs
+        label: Programs & Achievements
+        type: collection
+        path: src/content/programs
+        format: json
+        filename: "{title}.json"
+        view:
+          primary: title
+          fields: [title, type, organization, date]
+          sort: [title]
+        operations:
+          rename: false
+          delete: false
+        fields:
+          - name: title
+            label: Title
+            type: string
+            required: true
+          - name: type
+            label: Type
+            type: select
+            required: true
+            options:
+              values: [program, award, achievement, participation]
+          - name: summary
+            label: Summary
+            type: text
+            required: true
+          - name: organization
+            label: Organization
+            type: string
+            required: false
+            default: null
+          - name: location
+            label: Location
+            type: string
+            required: false
+            default: null
+          - name: date
+            label: Date
+            type: string
+            required: false
+            default: null
+          - name: teamContext
+            label: Team context
+            type: text
+            required: false
+            default: null
+            description: Preserve team attribution. Do not present team outcomes as individual awards.
+          - name: url
+            label: Program URL
+            type: string
+            required: false
+            default: null
+            hidden: true
+            description: Hidden because a blank value would fail Astro URL validation.
+          - name: relatedProjects
+            label: Related projects
+            type: select
+            list: true
+            required: true
+            default: []
+            options:
+              values:
+                - name: sap-support-analytics-power-bi
+                  label: SAP Support Analytics — Power BI
+                - name: master-data-automation-initiative
+                  label: Master Data Automation Initiative
+                - name: ai-maintenance-planner
+                  label: AI Maintenance Planner — SAP MDEP-CE Cohort 7
+            description: Stores exact Astro project entry IDs. Update options if project IDs change.
+
+      - name: skills
+        label: Skills
+        type: collection
+        path: src/content/skills
+        format: json
+        filename: "{name}.json"
+        view:
+          primary: name
+          fields: [name, category, exposure, order]
+          sort: [category, order]
+        operations:
+          rename: false
+          delete: false
+        fields:
+          - name: name
+            label: Skill
+            type: string
+            required: true
+          - name: category
+            label: Category
+            type: select
+            required: true
+            options:
+              values:
+                - name: SAP Finance
+                  label: SAP Finance
+                - name: Business Process & Implementation
+                  label: Business Process & Implementation
+                - name: Data & Analytics
+                  label: Data & Analytics
+                - name: BTP & Applied AI
+                  label: BTP & Applied AI
+          - name: exposure
+            label: Exposure level
+            type: select
+            required: true
+            options:
+              values: [professional-experience, project-experience, hands-on-exposure, positioning]
+            description: Controls whether the site presents this as established/core experience or an expanding capability. Do not promote BTP or AI to professional experience without evidence.
+          - name: order
+            label: Order within category
+            type: number
+            required: true
+            description: Controls display order within the category.
+
+settings:
+  content:
+    merge: true
