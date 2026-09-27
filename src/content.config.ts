@@ -29,6 +29,7 @@ const profile = defineCollection({
     shortBio: z.string(),
     location: z.string().nullable(),
     email: z.string().email().nullable(),
+    phone: z.string().nullable().optional(),
     linkedin: z.string().url().nullable(),
     github: z.string().url().nullable(),
     resume: z.string().nullable(),

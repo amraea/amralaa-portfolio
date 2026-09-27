@@ -204,7 +204,7 @@ button, summary { font: inherit; }
 .contact-section h2 { margin: 0; font-size: clamp(33px, 4.5vw, 50px); font-weight: 620; letter-spacing: -.045em; line-height: 1.08; }
 .contact-section__inner > div:first-child > p:last-child { max-width: 520px; margin: 14px 0 0; color: #b9c5cf; font-size: 16px; line-height: 1.65; }
 .contact-section__actions { display: flex; flex-wrap: wrap; gap: 10px; }
-.contact-email { width: 100%; color: #b8c9d6; font-size: 12px; }
+.contact-phone { width: 100%; color: #b8c9d6; font-size: 13px; }
 .site-footer { background: #0b1521; color: #b7c3cd; }
 .site-footer > div { min-height: 70px; display: flex; align-items: center; justify-content: space-between; gap: 18px; }
 .site-footer a { color: inherit; font-size: 10px; font-weight: 670; letter-spacing: .07em; text-decoration: none; }

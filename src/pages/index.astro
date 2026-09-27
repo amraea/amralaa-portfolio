@@ -17,6 +17,15 @@ const [profileEntry, experiences, projects, skills, programs, education, certifi
 
 const profile = profileEntry?.data;
 if (!profile) throw new Error('Add a profile entry to src/content/profile/profile.json.');
+const personStructuredData = {
+  '@context': 'https://schema.org',
+  '@type': 'Person',
+  name: profile.name,
+  url: 'https://amralaa.site/',
+  description: profile.shortBio,
+  email: profile.email ?? undefined,
+  sameAs: profile.linkedin ? [profile.linkedin] : undefined,
+};
 
 const egpc = experiences.find(({ data }) => data.company.includes('EGPC'));
 const corcRoles = experiences
@@ -66,6 +75,7 @@ const portrait = '/images/Gemini_Generated_Image_fawrrsfawrrsfawr.png';
 ---
 
 <BaseLayout title={`${profile.name} | SAP Finance & Business Transformation`} description={profile.shortBio}>
+  <script type="application/ld+json" set:html={JSON.stringify(personStructuredData)} />
   <div id="top" class="site-shell">
     <SiteHeader name="AMR ALAAELDIN AHMED" />
 
@@ -234,12 +244,13 @@ const portrait = '/images/Gemini_Generated_Image_fawrrsfawrrsfawr.png';
           <div>
             <p class="eyebrow eyebrow--light">Next step</p>
             <h2>See the experience<br />behind the work.</h2>
-            <p>Explore the projects and career progression, or download the CV for a concise overview.</p>
+            <p>For conversations about SAP Finance, implementation and transformation, process improvement, analytics and automation, or BTP and applied-AI exploration.</p>
           </div>
           <div class="contact-section__actions">
-            <a class="button button--blue" href="#work">Explore selected work <span aria-hidden="true">↗</span></a>
+            {profile.email && <a class="button button--blue" href={`mailto:${profile.email}`}>Email Amr</a>}
+            {profile.linkedin && <a class="button button--outline-light" href={profile.linkedin}>Connect on LinkedIn <span aria-hidden="true">↗</span></a>}
             {profile.resume && <a class="button button--outline-light" href={profile.resume} download>Download CV <span aria-hidden="true">↓</span></a>}
-            {profile.email && <a class="contact-email" href={`mailto:${profile.email}`}>Email Amr</a>}
+            {profile.phone && <a class="contact-phone" href={`tel:${profile.phone.replace(/[^\d+]/g, '')}`}>Phone: {profile.phone}</a>}
           </div>
         </div>
       </section>

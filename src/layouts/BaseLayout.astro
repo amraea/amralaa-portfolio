@@ -4,9 +4,36 @@ import '../styles/global.css';
 interface Props {
   title: string;
   description: string;
+  canonicalURL?: string | null;
+  ogTitle?: string;
+  ogDescription?: string;
+  ogType?: 'website' | 'article';
+  ogImage?: string;
+  ogImageAlt?: string;
+  twitterCard?: 'summary' | 'summary_large_image';
+  noindex?: boolean;
 }
 
-const { title, description } = Astro.props;
+const {
+  title,
+  description,
+  canonicalURL: canonicalOverride,
+  ogTitle,
+  ogDescription,
+  ogType = 'website',
+  ogImage,
+  ogImageAlt,
+  twitterCard,
+  noindex = false,
+} = Astro.props;
+const siteURL = Astro.site ?? new URL('https://amralaa.site');
+const canonicalURL = canonicalOverride === undefined
+  ? new URL(Astro.url.pathname, siteURL).href
+  : canonicalOverride;
+const socialTitle = ogTitle ?? title;
+const socialDescription = ogDescription ?? description;
+const socialImage = ogImage ? new URL(ogImage, siteURL).href : undefined;
+const socialCard = twitterCard ?? (socialImage ? 'summary_large_image' : 'summary');
 ---
 
 <!doctype html>
@@ -16,6 +43,20 @@ const { title, description } = Astro.props;
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="description" content={description} />
     <meta name="theme-color" content="#f5f6f7" />
+    {canonicalURL && <link rel="canonical" href={canonicalURL} />}
+    <link rel="sitemap" href="/sitemap-index.xml" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    {noindex && <meta name="robots" content="noindex,follow" />}
+    <meta property="og:title" content={socialTitle} />
+    <meta property="og:description" content={socialDescription} />
+    {canonicalURL && <meta property="og:url" content={canonicalURL} />}
+    <meta property="og:type" content={ogType} />
+    {socialImage && <meta property="og:image" content={socialImage} />}
+    {socialImage && ogImageAlt && <meta property="og:image:alt" content={ogImageAlt} />}
+    <meta name="twitter:card" content={socialCard} />
+    <meta name="twitter:title" content={socialTitle} />
+    <meta name="twitter:description" content={socialDescription} />
+    {socialImage && <meta name="twitter:image" content={socialImage} />}
     <title>{title}</title>
   </head>
   <body>
