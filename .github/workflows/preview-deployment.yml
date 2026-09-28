@@ -55,48 +55,32 @@ jobs:
           file_count=$(find dist -type f | wc -l | tr -d ' ')
           printf 'Build succeeded; generated files: %s\n' "$file_count"
 
-      - name: Verify preview SSH access and target directory
+      - name: Verify preview FTPS access and list account root
         shell: bash
         env:
-          PREVIEW_SSH_HOST: ${{ secrets.PREVIEW_SSH_HOST }}
-          PREVIEW_SSH_PORT: ${{ secrets.PREVIEW_SSH_PORT }}
-          PREVIEW_SSH_USER: ${{ secrets.PREVIEW_SSH_USER }}
-          PREVIEW_SSH_PRIVATE_KEY: ${{ secrets.PREVIEW_SSH_PRIVATE_KEY }}
-          PREVIEW_REMOTE_PATH: ${{ vars.PREVIEW_REMOTE_PATH }}
+          PREVIEW_FTP_HOST: ${{ secrets.PREVIEW_FTP_HOST }}
+          PREVIEW_FTP_PORT: ${{ secrets.PREVIEW_FTP_PORT }}
+          PREVIEW_FTP_USER: ${{ secrets.PREVIEW_FTP_USER }}
+          PREVIEW_FTP_PASSWORD: ${{ secrets.PREVIEW_FTP_PASSWORD }}
         run: |
           set -euo pipefail
 
-          [[ "$PREVIEW_SSH_HOST" =~ ^[A-Za-z0-9.-]+$ ]]
-          [[ "$PREVIEW_SSH_PORT" =~ ^[0-9]+$ ]]
-          (( PREVIEW_SSH_PORT > 0 && PREVIEW_SSH_PORT <= 65535 ))
-          [[ "$PREVIEW_SSH_USER" =~ ^[A-Za-z0-9._-]+$ ]]
-          [[ "$PREVIEW_REMOTE_PATH" =~ ^/[A-Za-z0-9_./-]+$ ]]
-          [[ ! "$PREVIEW_REMOTE_PATH" =~ (^|/)\.\.(/|$) ]]
-          [[ "${PREVIEW_REMOTE_PATH##*/}" == "website_538966dc" ]]
+          [[ "$PREVIEW_FTP_HOST" =~ ^[A-Za-z0-9.-]+$ ]]
+          [[ "$PREVIEW_FTP_PORT" =~ ^[0-9]+$ ]]
+          (( PREVIEW_FTP_PORT > 0 && PREVIEW_FTP_PORT <= 65535 ))
+          [[ -n "$PREVIEW_FTP_USER" && -n "$PREVIEW_FTP_PASSWORD" ]]
 
-          umask 077
-          mkdir -p "$HOME/.ssh"
-          key_file="$HOME/.ssh/preview_ed25519"
-          known_hosts="$HOME/.ssh/known_hosts"
-          printf '%s\n' "$PREVIEW_SSH_PRIVATE_KEY" > "$key_file"
-
-          ssh-keyscan -H -p "$PREVIEW_SSH_PORT" "$PREVIEW_SSH_HOST" >> "$known_hosts" 2>/dev/null
-          test -s "$known_hosts"
-
-          ssh_options=(
-            -i "$key_file"
-            -p "$PREVIEW_SSH_PORT"
-            -o BatchMode=yes
-            -o IdentitiesOnly=yes
-            -o StrictHostKeyChecking=yes
-            -o "UserKnownHostsFile=$known_hosts"
-            -o ConnectTimeout=15
-          )
-          target="$PREVIEW_SSH_USER@$PREVIEW_SSH_HOST"
-
-          ssh "${ssh_options[@]}" "$target" true
-          printf 'SSH connection success\n'
-
-          remote_check="test -d '$PREVIEW_REMOTE_PATH'"
-          ssh "${ssh_options[@]}" "$target" "$remote_check"
-          printf 'Remote target directory exists\n'
+          ftp_url="ftp://$PREVIEW_FTP_HOST:$PREVIEW_FTP_PORT/"
+          # --ssl-reqd requires explicit FTPS; curl's normal TLS certificate verification remains enabled.
+          listing_count=$(curl \
+            --fail \
+            --silent \
+            --show-error \
+            --connect-timeout 15 \
+            --max-time 60 \
+            --ssl-reqd \
+            --ftp-pasv \
+            --list-only \
+            --user "$PREVIEW_FTP_USER:$PREVIEW_FTP_PASSWORD" \
+            "$ftp_url" | wc -l | tr -d '[:space:]')
+          printf 'Explicit FTPS connection succeeded; account-root entries listed: %s\n' "$listing_count"
