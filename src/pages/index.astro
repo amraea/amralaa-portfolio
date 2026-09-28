@@ -35,7 +35,12 @@ const orderedCertifications = certifications.sort((a, b) => (b.data.issueDate ??
 const orderedEducation = education.sort((a, b) => (a.data.endDate ?? '').localeCompare(b.data.endDate ?? ''));
 const programOrder: Record<string, number> = { 'mdep-ce-cohort-7': 0, 'mdep-hackathon-win': 1, depi: 2 };
 const orderedPrograms = programs.sort((a, b) => (programOrder[a.id] ?? 99) - (programOrder[b.id] ?? 99));
-const orderedProjects = projects.sort((a, b) => a.data.order - b.data.order);
+const workSequence: Record<string, number> = {
+  'sap-support-analytics-power-bi': 1,
+  'master-data-automation-initiative': 2,
+  'ai-maintenance-planner': 3,
+};
+const orderedProjects = projects.sort((a, b) => (workSequence[a.id] ?? 99) - (workSequence[b.id] ?? 99));
 const coreSkills = skills
   .filter(({ data }) => data.exposure === 'professional-experience')
   .sort((a, b) => a.data.category.localeCompare(b.data.category) || a.data.order - b.data.order);
@@ -124,8 +129,8 @@ const portrait = '/images/Gemini_Generated_Image_fawrrsfawrrsfawr.png';
         <div class="page-width">
           <SectionHeading eyebrow="A finance-led foundation" title="From financial operations to business transformation" description="The through-line is a deep understanding of finance, extended through SAP, implementation, analytics and emerging technology." />
           <div class="story-grid">
-            <p class="story-copy">Amr’s career began in finance and budgeting at Cairo Oil Refining Company, then moved into SAP support at EGPC. SAP FI/CO, Treasury and Real Estate Management remain the core. Implementation, go-live, requirements clarification, SIT, UAT and business validation connect that finance foundation to business process work.</p>
-            <p class="story-copy story-copy--secondary">Power BI project work extends the story into analytics and process improvement. Through MDEP-CE, Amr gained hands-on exposure to SAP CAP, HANA Cloud, APIs, Joule Studio and AI agents. These are developing capabilities that build on his finance and SAP experience.</p>
+            <p class="story-copy">Finance and budgeting at CORC established the foundation. At EGPC, SAP FI/CO, Treasury and Real Estate Management support connect it to requirements clarification, SIT, UAT, business validation and company implementations.</p>
+            <p class="story-copy story-copy--secondary">Power BI and process-improvement work extend that experience into analytics and automation. MDEP-CE adds hands-on exposure to BTP and AI-agent concepts—developing capabilities built on Amr’s finance and SAP core.</p>
           </div>
           <ol class="progression" aria-label="Career and capability progression">
             <li><span class="progression__step">01</span><span>Finance</span></li>
@@ -171,10 +176,16 @@ const portrait = '/images/Gemini_Generated_Image_fawrrsfawrrsfawr.png';
 
       <section id="work" class="section section--paper">
         <div class="page-width">
-          <SectionHeading eyebrow="Selected work" title="Applied experience, made visible" description="Projects spanning collaborative AI exploration, support analytics and business process improvement." />
+          <SectionHeading eyebrow="Selected work" title="Applied experience, made visible" description="Operational analytics, cross-company process improvement, and collaborative applied-AI exploration." />
           <div class="work-list">
-            {orderedProjects.map((project) => (
-              <ProjectCard project={project} categoryLabel={projectLabels[project.data.category]} />
+            {orderedProjects.map((project, index) => (
+              <ProjectCard
+                project={project}
+                categoryLabel={projectLabels[project.data.category]}
+                number={String(index + 1).padStart(2, '0')}
+                sequence={['SEE', 'IMPROVE', 'EXPLORE'][index]}
+                featured={project.id === 'sap-support-analytics-power-bi'}
+              />
             ))}
           </div>
         </div>

@@ -9,6 +9,7 @@
   "businessContext": "The analysis covers data from 11 companies.",
   "challenge": "Provide visibility across ticket volumes, workload, recurring problems, critical issues, and process improvement or automation opportunities.",
   "solution": "A Power BI analytics project bringing together ticket, workload, problem, recurrence, resolution, and process data.",
+  "myRole": "Amr developed the Power BI solution around the SAP support process, combining SAP functional context with data analysis.",
   "technologies": ["Power BI"],
   "impact": "Provides visibility into ticket volumes, workload, recurring problems, critical issues, and process improvement and automation opportunities.",
   "metrics": [

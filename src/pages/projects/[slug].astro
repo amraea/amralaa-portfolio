@@ -20,6 +20,8 @@ const profileEntry = await getEntry('profile', 'profile');
 if (!profileEntry) throw new Error('Add the profile entry to src/content/profile/profile.json.');
 const profile = profileEntry.data;
 const brandName = 'AMR ALAAELDIN AHMED';
+const isPlannerPoC = project.id === 'ai-maintenance-planner';
+const displayTitle = isPlannerPoC ? 'AI Maintenance Planner' : data.title;
 const projectSequence = ['sap-support-analytics-power-bi', 'master-data-automation-initiative', 'ai-maintenance-planner'];
 const currentIndex = projectSequence.indexOf(project.id);
 const previousId = projectSequence[currentIndex - 1];
@@ -50,8 +52,10 @@ const next = nextId ? projectLinks[nextId as keyof typeof projectLinks] : null;
           <p class="case-eyebrow"><span>{String(currentIndex + 1).padStart(2, '0')}</span>{story.sequence}</p>
           <div class="case-tags">
             <span>{story.category}</span>
+            {isPlannerPoC && <><span>Team project</span><span>Not production</span></>}
           </div>
-          <h1 id="case-study-title">{data.title}</h1>
+          <h1 id="case-study-title">{displayTitle}</h1>
+          {isPlannerPoC && <p class="case-hero__subtitle">SAP MDEP-CE Cohort 7 · BRICKS</p>}
           <p class="case-hero__statement">{story.heroStatement}</p>
         </div>
         <aside class="case-snapshot" aria-label="Project snapshot">
@@ -60,9 +64,9 @@ const next = nextId ? projectLinks[nextId as keyof typeof projectLinks] : null;
         </aside>
       </header>
 
-      <dl class:list={["case-facts", `case-facts--${story.sequence.toLowerCase()}`]} aria-label="Project scope and focus">
+      {story.facts.length > 0 && <dl class:list={["case-facts", `case-facts--${story.sequence.toLowerCase()}`]} aria-label="Project scope and focus">
         {story.facts.map((fact) => <div><dt>{fact.label}</dt><dd>{fact.value}</dd></div>)}
-      </dl>
+      </dl>}
 
       <section class="case-section case-opening" aria-labelledby="opening-title">
         <div class="case-section__label"><span>01</span><span>Context</span></div>
@@ -83,7 +87,7 @@ const next = nextId ? projectLinks[nextId as keyof typeof projectLinks] : null;
       </section>
 
       <section class:list={["case-visual-section", { 'case-visual-section--process': story.sequence === 'IMPROVE' }]} aria-label={story.sequence === 'SEE' ? 'Data to improvement sequence' : story.sequence === 'IMPROVE' ? 'Before and after process comparison' : 'Conceptual technology and decision-support flow'}>
-        <CaseStudyVisual kind={story.visual} before={story.before} after={story.after} />
+        <CaseStudyVisual kind={story.visual} before={story.before} after={story.after} dimensions={story.dimensions} areas={story.areas} />
       </section>
 
       <section class="case-section case-role" aria-labelledby="role-title">
@@ -150,7 +154,7 @@ const next = nextId ? projectLinks[nextId as keyof typeof projectLinks] : null;
       )}
 
       <section class="case-closing" aria-labelledby="closing-title">
-        <p class="case-section__kicker">{story.sequence === 'SEE' ? 'WHAT THIS PROJECT CONNECTS' : story.sequence === 'IMPROVE' ? 'THE PROCESS IMPROVEMENT BRIDGE' : 'AN EXPLORATORY TEAM HACKATHON PoC'}</p>
+        <p class="case-section__kicker">{story.sequence === 'SEE' ? 'WHAT THIS PROJECT CONNECTS' : story.sequence === 'IMPROVE' ? 'THE PROCESS IMPROVEMENT BRIDGE' : 'EXTENDING THE FOUNDATION'}</p>
         <h2 id="closing-title">{story.closing}</h2>
       </section>
 

@@ -13,6 +13,8 @@ export type CaseStudy = {
   contribution?: string[];
   demonstrates?: string[];
   technologies?: string[];
+  dimensions?: string[];
+  areas?: string[];
   contextNote?: string;
   teamAchievement?: string;
   question?: { setup: string; prompt: string };
@@ -24,22 +26,22 @@ export const caseStudies: Record<string, CaseStudy> = {
   'sap-support-analytics-power-bi': {
     sequence: 'SEE',
     category: 'Analytics Project',
-    heroStatement: 'See support workload, recurrence, resolution, and process signals across 11 companies.',
-    opening: 'SAP support activity produces operational data, but individual records do not by themselves show workload, recurring problems, resolution patterns, or improvement opportunities. Developed through DEPI, this Power BI project explored a management-level view of support data across 11 companies.',
+    heroStatement: 'Use SAP support data to see operational patterns across 11 companies.',
+    opening: 'Individual support records explain incidents; together, they can offer a wider view of workload, recurring problems, resolution patterns, and improvement opportunities. This Power BI project brings support data across 11 companies into a management-level analytical view.',
     snapshot: [
       { label: 'Coverage', value: '11 companies' },
       { label: 'Tool', value: 'Power BI' },
-      { label: 'Context', value: 'Developed through DEPI' },
+      { label: 'Development context', value: 'Developed through DEPI' },
     ],
     facts: [
-      { value: 'Ticket volumes', label: 'Demand' },
-      { value: 'Workload', label: 'Distribution' },
-      { value: 'Recurrence + resolution', label: 'Patterns' },
-      { value: 'Process improvement', label: 'Opportunities to investigate' },
+      { value: '11', label: 'Companies covered' },
+      { value: 'Power BI', label: 'Analytical view' },
+      { value: 'SAP support', label: 'Operational context' },
+      { value: 'Management', label: 'Visibility focus' },
     ],
     challenge: {
       heading: 'This is not just ticket counting',
-      body: 'The project sought a broader operational view: where demand comes from, how workload is distributed, what recurs, and what may warrant closer investigation.',
+      body: 'The goal was a broader operational view than ticket-by-ticket review: demand, workload, recurrence and resolution patterns that may warrant closer investigation.',
       questions: [
         'Where is support demand coming from?',
         'How is workload distributed across companies?',
@@ -49,14 +51,15 @@ export const caseStudies: Record<string, CaseStudy> = {
     },
     role: {
       heading: 'Connect SAP support context to analysis',
-      body: 'Amr developed the Power BI solution around the SAP support process, combining SAP functional context with data analysis. The aim was to make workload, recurrence, resolution, and process signals useful for operational review—not simply count tickets.',
+      body: 'Amr developed the Power BI solution around the SAP support process, organizing support information for management visibility—not just ticket totals.',
     },
     visual: 'analytics',
+    dimensions: ['Company', 'Ticket volume', 'Workload', 'Problems', 'Recurrence', 'Resolution', 'Critical issues'],
     technologies: ['Power BI', 'SAP support data', 'Data analysis', 'Process analysis'],
-    contextNote: 'Developed through the Digital Egypt Pioneers Initiative (DEPI).',
+    contextNote: 'DEPI · Data Analysis — Microsoft Power BI Specialist track.',
     interpretation: {
       heading: 'Patterns create opportunities to investigate',
-      body: 'Recurring demand can prompt teams to examine process standardization, user enablement, master-data improvement, functional correction, or potential automation. These remain opportunities to investigate, not implemented outcomes.',
+      body: 'Visible patterns can prompt investigation into process standardization, user enablement, master-data improvement, functional correction, or potential automation. These are opportunities to investigate, not measured outcomes.',
     },
     closing: 'SAP functional understanding gives support data context; analytics makes operational patterns more visible for decision-making.',
   },
@@ -71,27 +74,28 @@ export const caseStudies: Record<string, CaseStudy> = {
       { label: 'Scope', value: 'Cross-company master data' },
     ],
     facts: [
-      { value: 'Customers · vendors · employees', label: 'People and counterparties' },
-      { value: 'G/L accounts · banks', label: 'Finance records' },
-      { value: 'Profit centers · cost centers', label: 'Organizational dimensions' },
+      { value: '10', label: 'Companies covered' },
+      { value: '7', label: 'Master-data request areas' },
+      { value: 'Consolidated', label: 'Cross-company request flow' },
     ],
     challenge: {
       heading: 'Rethink the request process itself',
-      body: 'Separate submissions made the same business need more repetitive across entities. The opportunity was to simplify the process—not add another form.',
+      body: 'The opportunity was to simplify the process itself, not simply introduce another form.',
     },
     role: {
       heading: 'Connect the business problem to the solution process',
-      body: 'Amr connected the business need with the solution process as a contributing team member.',
+      body: 'Amr connected the business need to the solution process across idea, requirements, design, testing and development.',
       points: ['Contributed to the business idea', 'Clarified business requirements', 'Participated in process design', 'Participated in UAT', 'Contributed to solution development'],
     },
     visual: 'process',
+    areas: ['Customers', 'Vendors', 'Employees', 'G/L accounts', 'Banks', 'Profit centers', 'Cost centers'],
     before: ['Business requirement', 'Company 1 request', 'Company 2 request', 'Company 3 request', '…', 'Company 10 request'],
     after: ['Business requirement', 'Consolidated request', 'Applicable companies', 'Master-data process'],
     contribution: ['Repeated requests', 'Consolidated requirement', 'Cross-company process', 'More standardized execution'],
     demonstrates: ['Business-process analysis', 'Cross-company thinking', 'SAP business context', 'Requirements clarification + process design', 'UAT participation', 'Business/development collaboration + practical automation thinking'],
     interpretation: {
       heading: 'Improve the process before automating it',
-      body: 'Automation is most valuable when it starts with understanding and simplifying the business process rather than merely digitizing an inefficient process.',
+      body: 'Automation is most useful when it follows a clear understanding and simplification of the business process.',
     },
     closing: 'A practical bridge between SAP business context and cross-company process improvement.',
   },
@@ -99,22 +103,16 @@ export const caseStudies: Record<string, CaseStudy> = {
     sequence: 'EXPLORE',
     category: 'Hackathon PoC',
     heroStatement: 'Explore whether AI-assisted planning can surface readiness, blockers, risks, and next actions.',
-    opening: 'Maintenance planners need more than an order record: they may need to see readiness, blockers, risks, and a useful next action. The BRICKS team explored that need with maintenance-order and operation data.',
+    opening: 'Maintenance planners may need to understand readiness, blockers, risks, and what to consider next. The BRICKS team explored that question using maintenance-order and operation data.',
     snapshot: [
-      { label: 'Team', value: 'BRICKS · team project' },
-      { label: 'Program', value: 'SAP MDEP-CE Cohort 7' },
-      { label: 'Status', value: 'Not production' },
-      { label: 'Focus', value: 'Planner decision support' },
+      { label: 'Team', value: '7 members · 2 countries' },
+      { label: 'Cohort context', value: '4 ministries · 7 specialisations' },
+      { label: 'Recognition', value: 'BRICKS hackathon winner' },
     ],
-    facts: [
-      { value: '7', label: 'Team members' },
-      { value: '2', label: 'Countries' },
-      { value: '4', label: 'Ministries' },
-      { value: '7', label: 'Specialisations' },
-    ],
+    facts: [],
     challenge: {
       heading: 'Shift from order contents to planner attention',
-      body: 'An order contains information; planning still needs context for readiness, blockers, risks, and a useful next step.',
+      body: 'An order contains information; the planning question is what deserves attention next.',
     },
     question: { setup: 'Instead of asking, “What does the maintenance order contain?”', prompt: 'What should the planner pay attention to next?' },
     role: {
@@ -123,8 +121,7 @@ export const caseStudies: Record<string, CaseStudy> = {
     },
     visual: 'agent',
     technologies: ['SAP CAP', 'SAP HANA Cloud', 'APIs', 'Joule Studio / AI agent concepts'],
-    teamAchievement: 'The BRICKS team won the MDEP-CE Cohort 7 hackathon with this concept.',
     demonstrates: ['SAP BTP application-development concepts', 'Business context', 'AI-agent concepts', 'Decision support'],
-    closing: 'An exploratory PoC connecting SAP business context, BTP concepts, and AI-agent ideas with planner decision support.',
+    closing: 'A team exploration of how SAP business context, BTP concepts and AI-agent ideas could support a planner’s next decision.',
   },
 };

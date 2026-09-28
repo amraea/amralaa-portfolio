@@ -3,9 +3,11 @@ interface Props {
   kind: 'analytics' | 'process' | 'agent';
   before?: string[];
   after?: string[];
+  dimensions?: string[];
+  areas?: string[];
 }
 
-const { kind, before = [], after = [] } = Astro.props;
+const { kind, before = [], after = [], dimensions = [], areas = [] } = Astro.props;
 const analyticsSteps = [
   { title: 'SAP support', note: 'Operational activity across companies' },
   { title: 'Data', note: 'Ticket, workload, problem and resolution information' },
@@ -15,10 +17,11 @@ const analyticsSteps = [
 ];
 const agentSteps = [
   { title: 'Maintenance context', note: 'Order and operation data' },
-  { title: 'SAP application + structured data', note: 'SAP CAP concepts · HANA Cloud · APIs' },
-  { title: 'AI-assisted reasoning', note: 'Joule / AI agent concepts' },
-  { title: 'Recommended next action', note: 'Readiness · blockers · risks' },
-  { title: 'Human decision', note: 'The planner evaluates the recommendation' },
+  { title: 'Readiness and constraints', note: 'Planning context to consider alongside the order' },
+  { title: 'Structured SAP context', note: 'SAP CAP · HANA Cloud · APIs' },
+  { title: 'AI-assisted reasoning', note: 'Joule / AI-agent concepts' },
+  { title: 'Blockers, risks and next actions', note: 'Information surfaced for planner review' },
+  { title: 'Planner decision', note: 'Human judgment remains the final step' },
 ];
 ---
 
@@ -28,6 +31,7 @@ const agentSteps = [
     <ol class="analytics-flow">
       {analyticsSteps.map((step) => <li><strong>{step.title}</strong><span>{step.note}</span></li>)}
     </ol>
+    {dimensions.length > 0 && <div class="visual-evidence"><p>SUPPORT ANALYSIS DIMENSIONS</p><ul>{dimensions.map((dimension) => <li>{dimension}</li>)}</ul></div>}
     <p class="study-visual__note">Patterns prompt further investigation; they do not establish root causes.</p>
   </figure>
 )}
@@ -46,6 +50,7 @@ const agentSteps = [
         <ol>{after.map((step, index) => <li><span>{String(index + 1).padStart(2, '0')}</span>{step}</li>)}</ol>
       </section>
     </div>
+    {areas.length > 0 && <div class="visual-evidence"><p>SEVEN MASTER-DATA REQUEST AREAS</p><ul>{areas.map((area) => <li>{area}</li>)}</ul></div>}
     <p class="study-visual__note">A process concept illustrating consolidated requests; it does not specify unverified workflow or system steps.</p>
   </figure>
 )}
@@ -56,6 +61,6 @@ const agentSteps = [
     <ol class="agent-flow">
       {agentSteps.map((step) => <li><span class="agent-flow__node" aria-hidden="true"></span><div><strong>{step.title}</strong><span>{step.note}</span></div></li>)}
     </ol>
-    <p class="study-visual__note">Conceptual flow only. Recommended actions remain subject to human judgment.</p>
+    <p class="study-visual__note">Conceptual flow; recommended actions support planner judgment.</p>
   </figure>
 )}

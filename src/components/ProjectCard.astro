@@ -4,27 +4,32 @@ import type { CollectionEntry } from 'astro:content';
 interface Props {
   project: CollectionEntry<'projects'>;
   categoryLabel: string;
+  number: string;
+  sequence: string;
+  featured?: boolean;
 }
 
-const { project, categoryLabel } = Astro.props;
+const { project, categoryLabel, number, sequence, featured = false } = Astro.props;
 const { data } = project;
-const index = String(data.order).padStart(2, '0');
 const metric = data.metrics[0];
+const displayTitle = project.id === 'ai-maintenance-planner' ? 'AI Maintenance Planner' : data.title;
 ---
 
-<article class:list={["work-item", { 'work-item--featured': data.order === 1 }]}>
-  <div class="work-item__number" aria-hidden="true">{index}</div>
+<article class:list={["work-item", { 'work-item--featured': featured }]}>
+  <div class="work-item__index" aria-hidden="true"><strong>{number}</strong><span>{sequence}</span></div>
   <div class="work-item__body">
     <div class="work-item__meta">
       <span class="work-item__category">{categoryLabel}</span>
       {data.developmentContext && <span>{data.developmentContext}</span>}
       {data.organization && <span>{data.organization}</span>}
     </div>
-    <h3><a href={`/projects/${project.id}/`}>{data.title}<span aria-hidden="true"> ↗</span></a></h3>
+    <h3><a href={`/projects/${project.id}/`}>{displayTitle}<span aria-hidden="true"> ↗</span></a></h3>
     <p class="work-item__description">{data.shortDescription}</p>
+    {data.myRole && <p class="work-item__role"><span>Contribution</span>{data.myRole}</p>}
     <div class="work-item__foot">
       {data.technologies.length > 0 && <p>{data.technologies.join(' · ')}</p>}
       {metric && <p class="work-item__metric"><strong>{metric.value}</strong> {metric.unit ?? metric.label}</p>}
+      {data.impact && <p class="work-item__impact">{data.impact}</p>}
       <a class="work-item__link" href={`/projects/${project.id}/`}>Explore project <span aria-hidden="true">↗</span></a>
     </div>
   </div>
