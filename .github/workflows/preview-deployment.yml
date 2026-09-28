@@ -84,3 +84,72 @@ jobs:
             --user "$PREVIEW_FTP_USER:$PREVIEW_FTP_PASSWORD" \
             "$ftp_url" | wc -l | tr -d '[:space:]')
           printf 'Explicit FTPS connection succeeded; account-root entries listed: %s\n' "$listing_count"
+
+      - name: Deploy preview files over explicit FTPS
+        shell: bash
+        env:
+          PREVIEW_FTP_HOST: ${{ secrets.PREVIEW_FTP_HOST }}
+          PREVIEW_FTP_PORT: ${{ secrets.PREVIEW_FTP_PORT }}
+          PREVIEW_FTP_USER: ${{ secrets.PREVIEW_FTP_USER }}
+          PREVIEW_FTP_PASSWORD: ${{ secrets.PREVIEW_FTP_PASSWORD }}
+        run: |
+          set -euo pipefail
+
+          [[ "$PREVIEW_FTP_HOST" =~ ^[A-Za-z0-9.-]+$ ]]
+          [[ "$PREVIEW_FTP_PORT" =~ ^[0-9]+$ ]]
+          (( PREVIEW_FTP_PORT > 0 && PREVIEW_FTP_PORT <= 65535 ))
+          [[ -n "$PREVIEW_FTP_USER" && -n "$PREVIEW_FTP_PASSWORD" ]]
+
+          ftp_root="ftp://$PREVIEW_FTP_HOST:$PREVIEW_FTP_PORT"
+          uploaded_count=0
+          while IFS= read -r -d '' file; do
+            relative_path="${file#dist/}"
+            # STOR replaces matching files; --ftp-create-dirs creates only needed paths inside the jailed account root.
+            # No delete, rename, synchronization, or permission-changing operation is performed.
+            curl \
+              --fail \
+              --silent \
+              --show-error \
+              --connect-timeout 15 \
+              --max-time 120 \
+              --ssl-reqd \
+              --ftp-pasv \
+              --ftp-create-dirs \
+              --user "$PREVIEW_FTP_USER:$PREVIEW_FTP_PASSWORD" \
+              --upload-file "$file" \
+              "$ftp_root/$relative_path"
+            uploaded_count=$((uploaded_count + 1))
+          done < <(find dist -type f -print0)
+
+          (( uploaded_count > 0 ))
+          printf 'Preview deployment uploaded %s files from dist/ contents.\n' "$uploaded_count"
+
+      - name: Verify deployed preview URLs
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          preview_origin='https://preview.amralaa.site'
+          paths=(
+            /
+            /projects/ai-maintenance-planner/
+            /projects/master-data-automation-initiative/
+            /projects/sap-support-analytics-power-bi/
+            /sitemap-index.xml
+            /robots.txt
+            /assets/cv.pdf
+          )
+
+          for path in "${paths[@]}"; do
+            status=$(curl \
+              --fail \
+              --silent \
+              --show-error \
+              --connect-timeout 15 \
+              --max-time 45 \
+              --output /dev/null \
+              --write-out '%{http_code}' \
+              "$preview_origin$path")
+            [[ "$status" == '200' ]]
+            printf 'Preview URL reachable: %s (HTTP %s)\n' "$path" "$status"
+          done
